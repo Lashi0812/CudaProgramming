@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Hello",
+            "command":"nvcc",
+            "args": ["-arch","sm_89","./csrc/hello.cu","-o","./build/hello"],
+            "group": "build"
+        },
+        {
+            "label": "Run Hello",
+            "type": "shell",
+            "command": "./build/hello",
+            "group": "build",
+            "dependsOn":["Build Hello"]
+        }
+    ]
+}
