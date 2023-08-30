@@ -1,0 +1,32 @@
+{
+    "name":"New Dev",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."},
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "streetsidesoftware.code-spell-checker",
+                "ms-vscode.cmake-tools" ,
+                "NVIDIA.nsight-vscode-edition"
+            ],
+            "settings": {
+                "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+                "jupyter.debugJustMyCode": false
+            }
+        }
+    },
+    "features": {
+        "./zsh-plugins": {
+            "plugins": "zsh-syntax-highlighting zsh-autosuggestions",
+            "omzPlugins": "https://github.com/zsh-users/zsh-syntax-highlighting https://github.com/zsh-users/zsh-autosuggestions"
+        }
+    },
+    "mounts": [
+        "source=//e/data,target=/mnt/data,type=bind,consistency=cached"
+    ],
+    "runArgs": ["--env-file",".devcontainer/devcontainer.env","--gpus","all"]
+}
