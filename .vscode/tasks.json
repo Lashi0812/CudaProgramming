@@ -14,6 +14,7 @@
             "group": "build",
             "dependsOn":["Build Hello"]
         },
+        // Add Vector
         {
             "label": "Build AddVector",
             "command":"nvcc",
@@ -23,16 +24,47 @@
         {
             "label": "Run AddVector",
             "type": "shell",
-            "command": "./build/addVector ${input:nElem} ${input:blockdim}",
+            "command": "./build/addVector ${input:nElem} ${input:blockdim} ",
             "group": "build",
             "dependsOn":["Build AddVector"]
         },
         {
             "label": "Profile AddVector",
             "type": "shell",
-            "command": "ncu ./build/addVector ${input:nElem} ${input:blockdim}",
+            "command": "ncu ./build/addVector ${input:nElem} ${input:blockdim} ",
             "group": "build",
             "dependsOn":["Build AddVector"]
+        },
+        // Simple Divergence
+        {
+            "label": "Build Simple Divergence",
+            "command":"nvcc",
+            "args": ["-arch","sm_89","-g","-G","./csrc/simpleDivergence.cu","-o","./build/simpleDivergence"],
+            "group": "build"
+        },
+        {
+            "label": "Run Simple Divergence",
+            "type": "shell",
+            "command": "./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
+            "group": "build",
+            "dependsOn":["Build Simple Divergence"]
+        },
+        {
+            "label": "Profile Simple Divergence",
+            "type": "shell",
+            "command": "ncu ./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
+            "group": "build",
+            "dependsOn":["Build Simple Divergence"]
+        },
+        {
+            "label": "Metric Profile Simple Divergence",
+            "command":"ncu",
+            "args": [
+                "--metric","branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,gpu__time_duration.sum",
+                "./build/simpleDivergence","${input:nElem}", "${input:blockdim}"
+            ],
+            "group": "build",
+            "dependsOn":["Build Simple Divergence"]
         }
     ],
     "inputs": [
@@ -48,6 +80,10 @@
             "description": "Number of Element in the Array",
             "options": [
                 "16777216",    // 2^24
+                "128",
+                "64",
+                "4",
+                "2"
             ]
         }
     ]

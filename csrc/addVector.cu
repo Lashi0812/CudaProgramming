@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     initialData(h_B, nElem);
 
     memset(hostRef, 0, nElem);
-    memset(hostRef, 0, nElem);
+    memset(gpuRef, 0, nElem);
 
     // allocat the device memory
     float *d_A, *d_B, *d_C;
