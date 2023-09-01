@@ -52,7 +52,7 @@
         {
             "label": "Profile Simple Divergence",
             "type": "shell",
-            "command": "ncu ./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
+            "command": "ncu -o ./profile/simpleDivergence ./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
             "group": "build",
             "dependsOn":["Build Simple Divergence"]
         },
@@ -65,7 +65,21 @@
             ],
             "group": "build",
             "dependsOn":["Build Simple Divergence"]
-        }
+        },
+        // Device Property
+        {
+            "label": "Build Device Property",
+            "command":"nvcc",
+            "args": ["-arch","sm_89","-g","-G","./csrc/deviceQuery.cu","-o","./build/deviceQuery","-I..","-lcuda"],
+            "group": "build"
+        },
+        {
+            "label": "Run Device Property",
+            "type": "shell",
+            "command": "./build/deviceQuery",
+            "group": "build",
+            "dependsOn":["Build Device Property"]
+        },
     ],
     "inputs": [
         {
