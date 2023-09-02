@@ -217,7 +217,8 @@
         {
             "label": "Metric Profile for Occupancy in Sum Matrix Diff Config",
             "command": "ncu",
-            "args": ["--csv",
+            "args": [
+                "--csv",
                 "--metric",
                 "sm__cycles_active.avg,sm__warps_active.avg,sm__warps_active.avg.per_cycle_active,sm__warps_active.avg.peak_sustained,sm__warps_active.avg.pct_of_peak_sustained_active,gpu__time_duration.sum,launch__block_size,launch__grid_size,launch__thread_count,launch__block_dim_x,launch__block_dim_y,launch__grid_dim_x,launch__grid_dim_y,l1tex__t_requests_pipe_lsu_mem_global_op_ld.avg,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_l1tex_t_sectors_pipe_lsu_mem_global_op_ld.avg",
                 // "regex:sm__(cycles|warps)_active",
@@ -229,6 +230,43 @@
                 "Build Sum Matrix Diff Config"
             ]
         },
+        // Reduce Integer
+        {
+            "label": "Build Reduce Integer",
+            "command": "nvcc",
+            "args": [
+                "-arch",
+                "sm_89",
+                "-g",
+                "-G",
+                "./csrc/reduceInteger.cu",
+                "-o",
+                "./build/reduceInteger"
+            ],
+            "group": "build",
+        },
+        {
+            "label": "Run Reduce Integer",
+            "type":"shell",
+            "command":"./build/reduceInteger",
+            "group": "build",
+            "dependsOn":[
+                "Build Reduce Integer"
+            ]
+        },
+        {
+            "label": "Metric Profile For Divergence in Reduce Integer",
+            "command":"ncu",
+            "args": [
+                "--metric",
+                "gpu__time_duration.sum,launch__block_dim_x,launch__block_size,launch__grid_dim_x,launch__grid_size,branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,sm__warps_active.avg.pct_of_peak_sustained_active,smsp__average_inst_executed_per_warp.ratio,smsp__inst_executed.sum,sm__warps_launched.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,dram__bytes.sum",
+                "./build/reduceInteger"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Reduce Integer"
+            ]
+        }
     ],
     "inputs": [
         {
