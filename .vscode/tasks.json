@@ -3,8 +3,14 @@
     "tasks": [
         {
             "label": "Build Hello",
-            "command":"nvcc",
-            "args": ["-arch","sm_89","./csrc/hello.cu","-o","./build/hello"],
+            "command": "nvcc",
+            "args": [
+                "-arch",
+                "sm_89",
+                "./csrc/hello.cu",
+                "-o",
+                "./build/hello"
+            ],
             "group": "build"
         },
         {
@@ -12,65 +18,104 @@
             "type": "shell",
             "command": "./build/hello",
             "group": "build",
-            "dependsOn":["Build Hello"]
+            "dependsOn": [
+                "Build Hello"
+            ]
         },
         // Add Vector
         {
             "label": "Build AddVector",
-            "command":"nvcc",
-            "args": ["-arch","sm_89","./csrc/addVector.cu","-o","./build/addVector"],
+            "command": "nvcc",
+            "args": [
+                "-arch",
+                "sm_89",
+                "./csrc/addVector.cu",
+                "-o",
+                "./build/addVector"
+            ],
             "group": "build"
         },
         {
             "label": "Run AddVector",
             "type": "shell",
-            "command": "./build/addVector ${input:nElem} ${input:blockdim} ",
+            "command": "./build/addVector ${input:nElem} ${input:blockdim.x} ",
             "group": "build",
-            "dependsOn":["Build AddVector"]
+            "dependsOn": [
+                "Build AddVector"
+            ]
         },
         {
             "label": "Profile AddVector",
             "type": "shell",
-            "command": "ncu ./build/addVector ${input:nElem} ${input:blockdim} ",
+            "command": "ncu ./build/addVector ${input:nElem} ${input:blockdim.x} ",
             "group": "build",
-            "dependsOn":["Build AddVector"]
+            "dependsOn": [
+                "Build AddVector"
+            ]
         },
         // Simple Divergence
         {
             "label": "Build Simple Divergence",
-            "command":"nvcc",
-            "args": ["-arch","sm_89","-g","-G","./csrc/simpleDivergence.cu","-o","./build/simpleDivergence"],
+            "command": "nvcc",
+            "args": [
+                "-arch",
+                "sm_89",
+                "-g",
+                "-G",
+                "./csrc/simpleDivergence.cu",
+                "-o",
+                "./build/simpleDivergence"
+            ],
             "group": "build"
         },
         {
             "label": "Run Simple Divergence",
             "type": "shell",
-            "command": "./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
+            "command": "./build/simpleDivergence ${input:nElem} ${input:blockdim.x} ",
             "group": "build",
-            "dependsOn":["Build Simple Divergence"]
+            "dependsOn": [
+                "Build Simple Divergence"
+            ]
         },
         {
             "label": "Profile Simple Divergence",
             "type": "shell",
-            "command": "ncu -o ./profile/simpleDivergence ./build/simpleDivergence ${input:nElem} ${input:blockdim} ",
+            "command": "ncu -o ./profile/simpleDivergence ./build/simpleDivergence ${input:nElem} ${input:blockdim.x} ",
             "group": "build",
-            "dependsOn":["Build Simple Divergence"]
+            "dependsOn": [
+                "Build Simple Divergence"
+            ]
         },
         {
-            "label": "Metric Profile Simple Divergence",
-            "command":"ncu",
+            "label": "Metric  for branch Divergence in Simple Divergence",
+            "command": "ncu",
             "args": [
-                "--metric","branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,gpu__time_duration.sum",
-                "./build/simpleDivergence","${input:nElem}", "${input:blockdim}"
+                "--metric",
+                "branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,gpu__time_duration.sum",
+                "./build/simpleDivergence",
+                "${input:nElem}",
+                "${input:blockdim.x}"
             ],
             "group": "build",
-            "dependsOn":["Build Simple Divergence"]
+            "dependsOn": [
+                "Build Simple Divergence"
+            ]
         },
         // Device Property
         {
             "label": "Build Device Property",
-            "command":"nvcc",
-            "args": ["-arch","sm_89","-g","-G","./csrc/deviceQuery.cu","-o","./build/deviceQuery","-I..","-lcuda"],
+            "command": "nvcc",
+            "args": [
+                "-arch",
+                "sm_89",
+                "-g",
+                "-G",
+                "./csrc/deviceQuery.cu",
+                "-o",
+                "./build/deviceQuery",
+                "-I..",
+                "-lcuda"
+            ],
             "group": "build"
         },
         {
@@ -78,22 +123,156 @@
             "type": "shell",
             "command": "./build/deviceQuery",
             "group": "build",
-            "dependsOn":["Build Device Property"]
+            "dependsOn": [
+                "Build Device Property"
+            ]
+        },
+        // sum matrix
+        {
+            "label": "Build Sum Matrix",
+            "command": "nvcc",
+            "args": [
+                "-O3",
+                "-arch",
+                "sm_89",
+                "-g",
+                "-G",
+                "./csrc/sumMatrix.cu",
+                "-o",
+                "./build/sumMatrix"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Sum Matrix",
+            "type": "shell",
+            "command": "./build/sumMatrix ${input:blockdim.x} ${input:blockdim.y}",
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix"
+            ]
+        },
+        {
+            "label": "Profile Sum Matrix",
+            "type": "shell",
+            "command": "ncu -o ./profile/sumMatrix ./build/sumMatrix ${input:blockdim.x} ${input:blockdim.y",
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix"
+            ]
+        },
+        {
+            "label": "Metric Profile for Occupancy in Sum Matrix",
+            "command": "ncu",
+            "args": [
+                "--metric",
+                // "regex:^(?=.*global_op_ld)(?!.*elapsed)(?!.*region)(?!.*conflicts)(?!.*wavefronts)(?!.*ldgst).*$",
+                // "l1tex__t_requests_pipe_lsu_mem_global_op_ld.avg,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_l1tex_t_sectors_pipe_lsu_mem_global_op_ld.avg",
+                // "sm__cycles_active.avg,sm__warps_active.avg,sm__warps_active.avg.per_cycle_active,sm__warps_active.avg.peak_sustained,sm__warps_active.avg.pct_of_peak_sustained_active,gpu__time_duration.sum,launch__block_size,launch__grid_size,launch__thread_count,launch__block_dim_x,launch__block_dim_y,launch__block_dim_z,launch__grid_dim_x,launch__grid_dim_y,launch__grid_dim_z",
+                // "regex:sm__(cycles|warps)_active",
+                "gpu__time_duration.sum,sm__warps_active,sm__warps_active.avg.pct_of_peak_sustained_active,launch__occupancy_per_block_size,launch__block_size,launch__grid_size,device__attribute_max_warps_per_multiprocessor,device__attribute_max_shared_memory_per_multiprocessor,smsp__warps_launched.sum,inst_executed,sm__cycles_active.sum,sm__inst_executed,sass__inst_executed_per_opcode,thread_inst_executed",
+                "./build/sumMatrix",
+                "${input:blockdim.x}",
+                "${input:blockdim.y}"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix"
+            ]
+        },
+        // sum matrix using differnet config
+        {
+            "label": "Build Sum Matrix Diff Config",
+            "command": "nvcc",
+            "args": [
+                "-O3",
+                "-arch",
+                "sm_89",
+                "-g",
+                "-G",
+                "./csrc/sumMatrixDiffConfig.cu",
+                "-o",
+                "./build/sumMatrixDiffConfig"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Sum Matrix Diff Config",
+            "type": "shell",
+            "command": "./build/sumMatrixDiffConfig",
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix Diff Config"
+            ]
+        },
+        {
+            "label": "Profile Sum Matrix Diff Config",
+            "type": "shell",
+            "command": "ncu -o ./profile/sumMatrixDiffConfig ./build/sumMatrixDiffConfig",
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix Diff Config"
+            ]
+        },
+        {
+            "label": "Metric Profile for Occupancy in Sum Matrix Diff Config",
+            "command": "ncu",
+            "args": ["--csv",
+                "--metric",
+                "sm__cycles_active.avg,sm__warps_active.avg,sm__warps_active.avg.per_cycle_active,sm__warps_active.avg.peak_sustained,sm__warps_active.avg.pct_of_peak_sustained_active,gpu__time_duration.sum,launch__block_size,launch__grid_size,launch__thread_count,launch__block_dim_x,launch__block_dim_y,launch__grid_dim_x,launch__grid_dim_y,l1tex__t_requests_pipe_lsu_mem_global_op_ld.avg,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_l1tex_t_sectors_pipe_lsu_mem_global_op_ld.avg",
+                // "regex:sm__(cycles|warps)_active",
+                // "gpu__time_duration.sum,sm__warps_active,sm__warps_active.avg.pct_of_peak_sustained_active,launch__occupancy_per_block_size,launch__block_size,launch__grid_size,device__attribute_max_warps_per_multiprocessor,device__attribute_max_shared_memory_per_multiprocessor,smsp__warps_launched.sum,inst_executed,sm__cycles_active.sum,sm__inst_executed,sass__inst_executed_per_opcode,thread_inst_executed",
+                "./build/sumMatrixDiffConfig"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "Build Sum Matrix Diff Config"
+            ]
         },
     ],
     "inputs": [
         {
             "type": "pickString",
-            "id": "blockdim",
+            "id": "blockdim.x",
             "description": "Blockdim in x axis",
-            "options":["1","2","4","8","16","32","64","128","256","512","1024"]
+            "options": [
+                "1",
+                "2",
+                "4",
+                "8",
+                "16",
+                "32",
+                "64",
+                "128",
+                "256",
+                "512",
+                "1024"
+            ]
+        },
+        {
+            "type": "pickString",
+            "id": "blockdim.y",
+            "description": "Blockdim in y axis",
+            "options": [
+                "1",
+                "2",
+                "4",
+                "8",
+                "16",
+                "32",
+                "64",
+                "128",
+                "256",
+                "512",
+                "1024"
+            ]
         },
         {
             "type": "pickString",
             "id": "nElem",
             "description": "Number of Element in the Array",
             "options": [
-                "16777216",    // 2^24
+                "16777216", // 2^24
                 "128",
                 "64",
                 "4",
