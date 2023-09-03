@@ -107,7 +107,7 @@ int main(int argc, char **argv)
                deviceProp.maxGridSize[2]);
     }
 }
-
+cudaFuncCache
 int _ConvertSMVer2Cores(int major, int minor)
 {
     // Defines for GPU Architecture types (using the SM version to determine
