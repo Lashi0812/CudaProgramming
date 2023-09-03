@@ -9,10 +9,12 @@ if __name__ == "__main__":
     parser.add_argument("--output_file")
     parser.add_argument("--group_keys",nargs="+",help='Allowed values ["ID","Kernel Name","Metric Name","Metric Unit","Metric Value"]',
                         default="ID")
+    parser.add_argument("--skip_rows",type=int,help="1 Indexed",default=0)
     args = parser.parse_args()
     
     df = pd.read_csv(args.input_file,
-                     usecols=["ID","Kernel Name","Metric Name","Metric Unit","Metric Value"])
+                     usecols=["ID","Kernel Name","Metric Name","Metric Unit","Metric Value"],
+                     skiprows=int(args.skip_rows))
     groups = df.groupby(args.group_keys)
     
     final_dict = defaultdict(list)

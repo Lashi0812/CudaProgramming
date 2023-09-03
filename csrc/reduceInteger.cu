@@ -71,6 +71,100 @@ __global__ void reduceInterleaved(int *g_idata, int *g_odata, unsigned int n)
         g_odata[blockIdx.x] = block_data[0];
 }
 
+__global__ void reduceUnroll2(int *g_idata, int *g_odata, unsigned int n)
+{
+    unsigned int tid = threadIdx.x;
+    unsigned int idx = blockDim.x * blockIdx.x * 2 + threadIdx.x;
+
+    // each block can take two blocks
+    int *block_data = g_idata + 2 * blockDim.x * blockIdx.x;
+
+    // add two blocks of data using single block of threads (unroll)
+    if (idx + blockDim.x < n)
+        g_idata[idx] += g_idata[idx + blockDim.x];
+
+    __syncthreads();
+
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+    {
+        if (tid < stride)
+        {
+            block_data[tid] += block_data[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0)
+        g_odata[blockIdx.x] = block_data[0];
+}
+
+__global__ void reduceUnroll4(int *g_idata, int *g_odata, unsigned int n)
+{
+    unsigned int tid = threadIdx.x;
+    unsigned int idx = blockDim.x * blockIdx.x * 4 + threadIdx.x;
+
+    int *block_data = g_idata + 4 * blockDim.x * blockIdx.x;
+
+    // unroll 4
+    if (idx + blockDim.x < n)
+    {
+        int a1 = g_idata[idx];
+        int a2 = g_idata[idx + blockDim.x];
+        int a3 = g_idata[idx + blockDim.x * 2];
+        int a4 = g_idata[idx + blockDim.x * 3];
+        g_idata[idx] = a1 + a2 + a3 + a4;
+    }
+    __syncthreads();
+
+    // reduce interleaved
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+    {
+        if (tid < stride)
+        {
+            block_data[tid] += block_data[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0)
+        g_odata[blockIdx.x] = block_data[0];
+}
+
+__global__ void reduceUnroll8(int *g_idata, int *g_odata, unsigned int n)
+{
+    unsigned int tid = threadIdx.x;
+    unsigned int idx = blockDim.x * blockIdx.x * 8 + threadIdx.x;
+
+    int *block_data = g_idata + 8 * blockDim.x * blockIdx.x;
+
+    // unroll 8
+    if (idx + 7 * blockDim.x < n)
+    {
+        int a1 = g_idata[idx];
+        int a2 = g_idata[idx + blockDim.x];
+        int a3 = g_idata[idx + blockDim.x * 2];
+        int a4 = g_idata[idx + blockDim.x * 3];
+        int a5 = g_idata[idx + blockDim.x * 4];
+        int a6 = g_idata[idx + blockDim.x * 5];
+        int a7 = g_idata[idx + blockDim.x * 6];
+        int a8 = g_idata[idx + blockDim.x * 7];
+        g_idata[idx] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8;
+    }
+
+    __syncthreads();
+
+    // reduce interleaved
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+    {
+        if (tid < stride)
+        {
+            block_data[tid] += block_data[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0)
+        g_odata[blockIdx.x] = block_data[0];
+}
+
 int main()
 {
     unsigned int n = 1 << 24;
@@ -137,7 +231,7 @@ int main()
     if (!(cpu_sum == gpu_sum))
         printf("Test Failed for reduce neighborLess");
 
-    // launch the kernel reduce Neighbor less
+    // launch the kernel reduce InterLeavced
     cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
 
     printf("Execution reduceInterleaved config <<<%d,%d>>>\n", grid.x, block.x);
@@ -154,6 +248,60 @@ int main()
 
     if (!(cpu_sum == gpu_sum))
         printf("Test Failed for reduce Interleaved");
+
+    // launch the kernel reduce unroll2
+    cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
+    int unroll = 2;
+    printf("Execution reduceUnroll2 config <<<%d,%d>>>\n", grid.x / unroll, block.x);
+    reduceUnroll2<<<grid.x / unroll, block>>>(d_idata, d_odata, n);
+    cudaDeviceSynchronize();
+
+    // get back the result
+    cudaMemcpy(h_odata, d_odata, grid.x / unroll * sizeof(int), cudaMemcpyDeviceToHost);
+    gpu_sum = 0;
+    for (int i = 0; i < grid.x / unroll; i++)
+    {
+        gpu_sum += h_odata[i];
+    }
+
+    if (!(cpu_sum == gpu_sum))
+        printf("Test Failed for reduce Unroll2");
+
+    // launch the kernel reduce unroll 4
+    cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
+    unroll = 4;
+    printf("Execution reduceUnroll4 config <<<%d,%d>>>\n", grid.x / unroll, block.x);
+    reduceUnroll4<<<grid.x / unroll, block>>>(d_idata, d_odata, n);
+    cudaDeviceSynchronize();
+
+    // get back the result
+    cudaMemcpy(h_odata, d_odata, grid.x / unroll * sizeof(int), cudaMemcpyDeviceToHost);
+    gpu_sum = 0;
+    for (int i = 0; i < grid.x / unroll; i++)
+    {
+        gpu_sum += h_odata[i];
+    }
+
+    if (!(cpu_sum == gpu_sum))
+        printf("Test Failed for reduce Unroll4");
+
+    // launch the kernel reduce unroll 8
+    cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
+    unroll = 8;
+    printf("Execution reduceUnroll8 config <<<%d,%d>>>\n", grid.x / unroll, block.x);
+    reduceUnroll8<<<grid.x / unroll, block>>>(d_idata, d_odata, n);
+    cudaDeviceSynchronize();
+
+    // get back the result
+    cudaMemcpy(h_odata, d_odata, grid.x / unroll * sizeof(int), cudaMemcpyDeviceToHost);
+    gpu_sum = 0;
+    for (int i = 0; i < grid.x / unroll; i++)
+    {
+        gpu_sum += h_odata[i];
+    }
+
+    if (!(cpu_sum == gpu_sum))
+        printf("Test Failed for reduce Unroll8");
 
     // free memory
     free(h_idata);
