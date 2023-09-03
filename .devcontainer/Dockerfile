@@ -33,7 +33,9 @@ RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSI
     yes | sh cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local && \
     rm cmake-${CMAKE_VERSION}-linux-x86_64.sh
 
-
+# install nvidia nsight
+RUN apt update && \
+    apt install -y cuda-nsight-systems-12-2
 
 
     
