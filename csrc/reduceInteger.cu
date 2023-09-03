@@ -165,6 +165,55 @@ __global__ void reduceUnroll8(int *g_idata, int *g_odata, unsigned int n)
         g_odata[blockIdx.x] = block_data[0];
 }
 
+__global__ void reduceUnroll8Warps(int *g_idata, int *g_odata, unsigned int n)
+{
+    unsigned int tid = threadIdx.x;
+    unsigned int idx = 8 * blockDim.x * blockIdx.x + threadIdx.x;
+
+    int *block_data = g_idata + 8 * blockDim.x * blockIdx.x;
+
+    // unroll8
+    if (idx + 7 * blockDim.x < n)
+    {
+        int a1 = g_idata[idx];
+        int a2 = g_idata[idx + 1 * blockDim.x];
+        int a3 = g_idata[idx + 2 * blockDim.x];
+        int a4 = g_idata[idx + 3 * blockDim.x];
+        int a5 = g_idata[idx + 4 * blockDim.x];
+        int a6 = g_idata[idx + 5 * blockDim.x];
+        int a7 = g_idata[idx + 6 * blockDim.x];
+        int a8 = g_idata[idx + 7 * blockDim.x];
+        g_idata[idx] = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8;
+    }
+    __syncthreads();
+
+    // reduce interleaved upto stride greater than 32
+    for (int stride = blockDim.x / 2; stride > 32; stride >>= 1)
+    {
+        if (tid < stride)
+        {
+            block_data[tid] += block_data[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    // manual unroll for stride less than 32
+    // since warp is SIMT , implicit sync so we dont explict sync
+    if (tid < 32)
+    {
+        volatile int *vmem = block_data;
+        vmem[tid] += vmem[tid + 32];
+        vmem[tid] += vmem[tid + 16];
+        vmem[tid] += vmem[tid + 8];
+        vmem[tid] += vmem[tid + 4];
+        vmem[tid] += vmem[tid + 2];
+        vmem[tid] += vmem[tid + 1];
+    }
+
+    if (tid == 0)
+        g_odata[blockIdx.x] = block_data[0];
+}
+
 int main()
 {
     unsigned int n = 1 << 24;
@@ -302,6 +351,24 @@ int main()
 
     if (!(cpu_sum == gpu_sum))
         printf("Test Failed for reduce Unroll8");
+
+    // launch the kernel reduce unroll 8 warps
+    cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
+    unroll = 8;
+    printf("Execution reduceUnroll8Warps config <<<%d,%d>>>\n", grid.x / unroll, block.x);
+    reduceUnroll8Warps<<<grid.x / unroll, block>>>(d_idata, d_odata, n);
+    cudaDeviceSynchronize();
+
+    // get back the result
+    cudaMemcpy(h_odata, d_odata, grid.x / unroll * sizeof(int), cudaMemcpyDeviceToHost);
+    gpu_sum = 0;
+    for (int i = 0; i < grid.x / unroll; i++)
+    {
+        gpu_sum += h_odata[i];
+    }
+
+    if (!(cpu_sum == gpu_sum))
+        printf("Test Failed for reduce Unroll8Warps");
 
     // free memory
     free(h_idata);

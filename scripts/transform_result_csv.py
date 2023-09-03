@@ -24,8 +24,8 @@ if __name__ == "__main__":
         index_list.append(group_key)
         for name,unit,val in zip(group["Metric Name"].values,group["Metric Unit"].values,group["Metric Value"].values):
             if unit == "nsecond":
-                val = val * 1.E-6
-                unit = "millisec"
+                val = val * 1.E-3
+                unit = "microsec"
             if unit == "byte/second":
                 val = val / (1024 **3)
                 unit = "Gb/sec"

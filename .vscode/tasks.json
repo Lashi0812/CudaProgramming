@@ -262,7 +262,7 @@
                 "--csv",
                 "--log-file","./results/ncu_reduceInteger.csv","-f",
                 "--metric",
-                "gpu__time_duration.sum,launch__block_dim_x,launch__block_size,launch__grid_dim_x,launch__grid_size,branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,sm__warps_active.avg.pct_of_peak_sustained_active,smsp__average_inst_executed_per_warp.ratio,smsp__inst_executed.sum,sm__warps_launched.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,dram__bytes.sum,dram__bytes_read.sum.per_second,smsp__sass_inst_executed_op_ld.sum",
+                "gpu__time_duration.sum,launch__block_size,launch__grid_size,branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,sm__warps_active.avg.pct_of_peak_sustained_active,smsp__average_inst_executed_per_warp.ratio,smsp__inst_executed.sum,sm__warps_launched.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,dram__bytes.sum,dram__bytes_read.sum.per_second,smsp__sass_inst_executed_op_ld.sum,smsp__warp_issue_stalled_barrier_per_warp_active.pct,smsp__warp_issue_stalled_membar_per_warp_active.pct",
                 "./build/reduceInteger",
             ],
             "group": "build",
