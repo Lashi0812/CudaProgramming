@@ -50,6 +50,27 @@ __global__ void reduceNeighboredLess(int *g_idata, int *g_odata, unsigned int n)
         g_odata[blockIdx.x] = block_data[0];
 }
 
+__global__ void reduceInterleaved(int *g_idata, int *g_odata, unsigned int n)
+{
+    unsigned int tid = threadIdx.x;
+    unsigned int idx = blockDim.x * blockIdx.x + threadIdx.x;
+
+    int *block_data = g_idata + blockDim.x * blockIdx.x;
+
+    if (idx > n)
+        return;
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+    {
+        if (tid < stride)
+        {
+            block_data[tid] += block_data[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0)
+        g_odata[blockIdx.x] = block_data[0];
+}
+
 int main()
 {
     unsigned int n = 1 << 24;
@@ -115,6 +136,24 @@ int main()
 
     if (!(cpu_sum == gpu_sum))
         printf("Test Failed for reduce neighborLess");
+
+    // launch the kernel reduce Neighbor less
+    cudaMemcpy(d_idata, h_idata, nBytes, cudaMemcpyHostToDevice);
+
+    printf("Execution reduceInterleaved config <<<%d,%d>>>\n", grid.x, block.x);
+    reduceInterleaved<<<grid, block>>>(d_idata, d_odata, n);
+    cudaDeviceSynchronize();
+
+    // get back the result
+    cudaMemcpy(h_odata, d_odata, grid.x * sizeof(int), cudaMemcpyDeviceToHost);
+    gpu_sum = 0;
+    for (int i = 0; i < grid.x; i++)
+    {
+        gpu_sum += h_odata[i];
+    }
+
+    if (!(cpu_sum == gpu_sum))
+        printf("Test Failed for reduce Interleaved");
 
     // free memory
     free(h_idata);
