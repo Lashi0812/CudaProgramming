@@ -3,15 +3,17 @@ FROM nvidia/cuda:12.1.0-devel-ubuntu22.04
 ARG DEBIAN_FRONTEND=noninteractive
 ARG CUDA='cu121'
 
-RUN apt update && \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt update && \
     apt install -y bash \
                    build-essential \
                    git \
                    curl \
+                   wget \
+                   zsh \
                    ca-certificates \
                    python3.10 \
                    python3-pip && \
-    rm -rf /var/lib/apt/lists && \
     ln -s /usr/bin/python3.10 /usr/bin/python
 RUN python -m pip install --no-cache-dir --upgrade pip 
 RUN python -m pip install --pre torch  --index-url https://download.pytorch.org/whl/nightly/$CUDA
@@ -34,17 +36,31 @@ RUN curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSI
     rm cmake-${CMAKE_VERSION}-linux-x86_64.sh
 
 # install nvidia nsight
-RUN apt update && \
-    apt install -y cuda-nsight-systems-12-2
-
-
-    
-
-
-
-
-
-
-
+COPY .devcontainer/systems.deb /workspace/systems.deb
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt install -y  libglib2.0-0 \
+                    libtinfo5 \
+                    libxcb-xinerama0 \
+                    libxcb-icccm4 \
+                    libxcb-image0 \
+                    libxcb-keysyms1 \
+                    libxcb-randr0 \
+                    libxcb-render-util0 \
+                    libxcb-xfixes0 \
+                    libxcb-shape0 \
+                    libxkbcommon-x11-0 \
+                    libxcb-xinput0 \
+                    libfontconfig1 \
+                    libdbus-1-3 \
+                    libnss3 \
+                    libxcomposite1 \
+                    libxdamage1 \
+                    libxrandr2 \
+                    libxtst6 \
+                    libasound2 \
+                    libopengl0 \
+                    libegl1 && \
+    dpkg -i workspace/systems.deb && \
+    rm workspace/systems.deb
 
 
