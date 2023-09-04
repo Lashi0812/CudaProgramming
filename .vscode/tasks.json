@@ -270,6 +270,7 @@
                 "Build Reduce Integer"
             ]
         },
+        // Memory Transfer
         {
             "label": "Build Memory Transfer",
             "command":"nvcc",
@@ -309,6 +310,7 @@
                 "Build Memory Transfer"
             ]
         },
+        // Pinned Memory Transfer
         {
             "label": "Build Pinned Memory Transfer",
             "command":"nvcc",
@@ -346,6 +348,48 @@
             "group": "build",
             "dependsOn":[
                 "Build Pinned Memory Transfer"
+            ]
+        },
+        // Zero Copy 
+        {
+            "label": "Build Sum Array Zero Copy",
+            "command":"nvcc",
+            "args": [
+                "-O3",
+                "./csrc/sumArrayZeroCopy.cu",
+                "-o",
+                "./build/sumArrayZeroCopy"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Sum Array Zero Copy",
+            "type": "shell",
+            "command": "./build/sumArrayZeroCopy ${input:array_size}",
+            "group": "build",
+            "dependsOn":[
+                "Build Sum Array Zero Copy"
+            ]
+        },
+        {
+            "label": "System profile for Sum Array Zero Copy",
+            "command":"nsys",
+            "args": [
+                "profile",
+                "-t",
+                "cuda",
+                "--stats",
+                "true",
+                "--output",
+                "./profile/sumArrayZeroCopy",
+                "--force-overwrite",
+                "true",
+                "./build/sumArrayZeroCopy",
+                "${input:array_size}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Sum Array Zero Copy"
             ]
         }
     ],
@@ -402,6 +446,12 @@
             "type": "promptString",
             "id": "memory_size",
             "description": "Transfer Memory size in Mb",
+        },
+        {
+            "type": "promptString",
+            "id": "array_size",
+            "description": "just specify power of 2",
+            "default": "24"
         }
     ]
 }
