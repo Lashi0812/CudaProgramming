@@ -269,6 +269,84 @@
             "dependsOn":[
                 "Build Reduce Integer"
             ]
+        },
+        {
+            "label": "Build Memory Transfer",
+            "command":"nvcc",
+            "args": [
+                "-O3",
+                "./csrc/memTransfer.cu",
+                "-o",
+                "./build/memTransfer"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Memory Transfer",
+            "type": "shell",
+            "command":"./build/memTransfer ${input:memory_size}",
+            "group": "build",
+            "dependsOn":[
+                "Build Memory Transfer"
+            ]
+        },
+        {
+            "label": "System Profile for Memory Transfer",
+            "command":"nsys",
+            "args": [
+                "profile",
+                "--stats",
+                "true",
+                "--output",
+                "./profile/memTransfer",
+                "--force-overwrite",
+                "true",
+                "./build/memTransfer",
+                "${input:memory_size}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Memory Transfer"
+            ]
+        },
+        {
+            "label": "Build Pinned Memory Transfer",
+            "command":"nvcc",
+            "args": [
+                "-O3",
+                "./csrc/pinMemory.cu",
+                "-o",
+                "./build/pinMemory"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Run Pinned Memory Transfer",
+            "type": "shell",
+            "command":"./build/pinMemory ${input:memory_size}",
+            "group": "build",
+            "dependsOn":[
+                "Build Pinned Memory Transfer"
+            ]
+        },
+        {
+            "label": "System Profile for Pinned Memory Transfer",
+            "command":"nsys",
+            "args": [
+                "profile",
+                "--stats",
+                "true",
+                "--output",
+                "./profile/pinMemory",
+                "--force-overwrite",
+                "true",
+                "./build/pinMemory",
+                "${input:memory_size}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Pinned Memory Transfer"
+            ]
         }
     ],
     "inputs": [
@@ -319,6 +397,11 @@
                 "4",
                 "2"
             ]
+        },
+        {
+            "type": "promptString",
+            "id": "memory_size",
+            "description": "Transfer Memory size in Mb",
         }
     ]
 }
