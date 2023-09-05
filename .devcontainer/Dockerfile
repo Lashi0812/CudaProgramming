@@ -60,7 +60,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
                     libasound2 \
                     libopengl0 \
                     libegl1 && \
-    dpkg -i workspace/systems.deb && \
-    rm workspace/systems.deb
+    dpkg -i /workspace/systems.deb && \
+    rm /workspace/systems.deb
 
 
