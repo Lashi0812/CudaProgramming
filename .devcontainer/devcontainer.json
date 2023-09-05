@@ -9,9 +9,11 @@
                 "ms-vscode.cpptools",
                 "ms-python.python",
                 "ms-toolsai.jupyter",
+                "eamodio.gitlens",
                 "streetsidesoftware.code-spell-checker",
                 "ms-vscode.cmake-tools" ,
-                "NVIDIA.nsight-vscode-edition"
+                "NVIDIA.nsight-vscode-edition",
+
             ],
             "settings": {
                 "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
@@ -29,6 +31,8 @@
         "source=/mnt/drive/data,target=/mnt/data,type=bind,consistency=cached"
     ],
     "runArgs": ["--env-file",".devcontainer/devcontainer.env"
-    // ,"--gpus","all"
+    // ,"--runtime=nvidia" // nvidia-container-toolkit
+    ,"--gpus","all" 
+    
     ]
 }

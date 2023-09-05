@@ -2,6 +2,11 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "mkdir build directory",
+            "type": "shell",
+            "command" : "mkdir -p ./build"
+        },
+        {
             "label": "Build Hello",
             "command": "nvcc",
             "args": [
@@ -320,7 +325,10 @@
                 "-o",
                 "./build/pinMemory"
             ],
-            "group": "build"
+            "group": "build",
+            "dependsOn":[
+                "mkdir build directory",
+            ]
         },
         {
             "label": "Run Pinned Memory Transfer",
@@ -360,7 +368,10 @@
                 "-o",
                 "./build/sumArrayZeroCopy"
             ],
-            "group": "build"
+            "group": "build",
+            "dependsOn":[
+                "mkdir build directory",
+            ]
         },
         {
             "label": "Run Sum Array Zero Copy",
