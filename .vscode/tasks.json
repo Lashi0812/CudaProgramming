@@ -402,7 +402,7 @@
             "dependsOn":[
                 "Build Sum Array Zero Copy"
             ]
-        }
+        },
         // Offset
         {
             "label": "Build Read Write Offset With dlcm flags",
@@ -438,6 +438,25 @@
                 "--log-file","./profiling/results/ncu_readWriteOffset_${input:cacheModifier}.csv","-f",
                 "--metric",
                 "gpu__time_duration.sum,dram__bytes_read.sum,dram__sectors_read.sum,dramc__sectors_op_read.sum,fbpa__dram_read_bytes.sum,fbpa__dram_read_sectors.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum,l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio,lts__t_bytes_pipe_lsu_mem_global_op_ld.sum",
+                "./build/readWriteOffset_${input:cacheModifier}",
+                "${input:offset}",
+                "${input:blockdim.x}"                
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Read Write Offset With dlcm flags"
+            ]
+        },
+        {
+            "label": "Metric Profile Sections for Read Write Offset",
+            "command":"ncu",
+            "args": [
+                "-o",
+                "./profiling/profiles/readWriteOffset_${input:cacheModifier}",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/readWriteOffset.ncu-cfg",
                 "./build/readWriteOffset_${input:cacheModifier}",
                 "${input:offset}",
                 "${input:blockdim.x}"                

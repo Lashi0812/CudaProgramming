@@ -1,0 +1,4 @@
+[Launch-and-attach]
+-f
+--section = MemoryWorkloadAnalysis,MemoryWorkloadAnalysis_Tables,MemoryWorkloadAnalysis_Chart,MemoryCheck
+--section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/
