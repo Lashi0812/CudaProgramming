@@ -1,0 +1,4 @@
+,dram__bytes_read.sum (Mb),dram__sectors_read.sum (sector),gpu__time_duration.sum (microsec),l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio (sector/request),l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum (Mb),l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum (request),l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum (sector),smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct (%)
+0,128.0040283203125,4194436.0,203.264,4.0,128.0,1048576.0,4194304.0,100.0
+1,128.0379638671875,4195548.0,213.15200000000002,5.0,159.9998779296875,1048576.0,5242876.0,80.0
+2,128.0030517578125,4194404.0,227.71200000000002,4.0,127.9990234375,1048568.0,4194272.0,100.0

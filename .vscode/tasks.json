@@ -85,7 +85,7 @@
         {
             "label": "Profile Simple Divergence",
             "type": "shell",
-            "command": "ncu -o ./profile/simpleDivergence ./build/simpleDivergence ${input:nElem} ${input:blockdim.x} ",
+            "command": "ncu -o ./profiling/profiles/simpleDivergence ./build/simpleDivergence ${input:nElem} ${input:blockdim.x} ",
             "group": "build",
             "dependsOn": [
                 "Build Simple Divergence"
@@ -160,7 +160,7 @@
         {
             "label": "Profile Sum Matrix",
             "type": "shell",
-            "command": "ncu -o ./profile/sumMatrix ./build/sumMatrix ${input:blockdim.x} ${input:blockdim.y",
+            "command": "ncu -o ./profiling/profiles/sumMatrix ./build/sumMatrix ${input:blockdim.x} ${input:blockdim.y",
             "group": "build",
             "dependsOn": [
                 "Build Sum Matrix"
@@ -213,7 +213,7 @@
         {
             "label": "Profile Sum Matrix Diff Config",
             "type": "shell",
-            "command": "ncu -o ./profile/sumMatrixDiffConfig ./build/sumMatrixDiffConfig",
+            "command": "ncu -o ./profiling/profiles/sumMatrixDiffConfig ./build/sumMatrixDiffConfig",
             "group": "build",
             "dependsOn": [
                 "Build Sum Matrix Diff Config"
@@ -265,7 +265,7 @@
             "args": [
                 
                 "--csv",
-                "--log-file","./results/ncu_reduceInteger.csv","-f",
+                "--log-file","./profiling/results/ncu_reduceInteger.csv","-f",
                 "--metric",
                 "gpu__time_duration.sum,launch__block_size,launch__grid_size,branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,sm__warps_active.avg.pct_of_peak_sustained_active,smsp__average_inst_executed_per_warp.ratio,smsp__inst_executed.sum,sm__warps_launched.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,dram__bytes.sum,dram__bytes_read.sum.per_second,smsp__sass_inst_executed_op_ld.sum,smsp__warp_issue_stalled_barrier_per_warp_active.pct,smsp__warp_issue_stalled_membar_per_warp_active.pct,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct",
                 "./build/reduceInteger",
@@ -304,7 +304,7 @@
                 "--stats",
                 "true",
                 "--output",
-                "./profile/memTransfer",
+                "./profiling/profiles/memTransfer",
                 "--force-overwrite",
                 "true",
                 "./build/memTransfer",
@@ -347,7 +347,7 @@
                 "--stats",
                 "true",
                 "--output",
-                "./profile/pinMemory",
+                "./profiling/profiles/pinMemory",
                 "--force-overwrite",
                 "true",
                 "./build/pinMemory",
@@ -392,7 +392,7 @@
                 "--stats",
                 "true",
                 "--output",
-                "./profile/sumArrayZeroCopy",
+                "./profiling/profiles/sumArrayZeroCopy",
                 "--force-overwrite",
                 "true",
                 "./build/sumArrayZeroCopy",
@@ -403,12 +403,57 @@
                 "Build Sum Array Zero Copy"
             ]
         }
+        // Offset
+        {
+            "label": "Build Read Write Offset With dlcm flags",
+            "command": "nvcc",
+            "args": [
+                "-g",
+                "-G",
+                "-Xptxas",
+                "-dlcm=${input:cacheModifier}",
+                "./csrc/readWriteOffset.cu",
+                "-o",
+                "./build/readWriteOffset_${input:cacheModifier}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "mkdir build directory"
+            ]
+        },
+        {
+            "label": "Run Read Write Offset",
+            "type": "shell",
+            "command":"./build/readWriteOffset_${input:cacheModifier} ${input:offset} ${input:blockdim.x}",
+            "group": "build",
+            "dependsOn":[
+                "Build Read Write Offset With dlcm flags"
+            ]
+        },
+        {
+            "label": "Metric Profile for Read Write Offset",
+            "command":"ncu",
+            "args": [
+                "--csv",
+                "--log-file","./profiling/results/ncu_readWriteOffset_${input:cacheModifier}.csv","-f",
+                "--metric",
+                "gpu__time_duration.sum,dram__bytes_read.sum,dram__sectors_read.sum,dramc__sectors_op_read.sum,fbpa__dram_read_bytes.sum,fbpa__dram_read_sectors.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum,l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio,lts__t_bytes_pipe_lsu_mem_global_op_ld.sum",
+                "./build/readWriteOffset_${input:cacheModifier}",
+                "${input:offset}",
+                "${input:blockdim.x}"                
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Read Write Offset With dlcm flags"
+            ]
+        }
     ],
     "inputs": [
         {
             "type": "pickString",
             "id": "blockdim.x",
             "description": "Blockdim in x axis",
+            "default": "512",
             "options": [
                 "1",
                 "2",
@@ -463,6 +508,22 @@
             "id": "array_size",
             "description": "just specify power of 2",
             "default": "24"
+        },
+        {
+            "type": "pickString",
+            "id":"cacheModifier",
+            "description": "Enable/disable L1 Cache",
+            "default": "ca",
+            "options": [
+                "ca", // enable
+                "cg", // disable
+            ]
+        },
+        {
+            "type": "promptString",
+            "id": "offset",
+            "description": "differnet offset byte read/write eg : 0,11,128",
+            "default": "0,11,128"
         }
     ]
 }
