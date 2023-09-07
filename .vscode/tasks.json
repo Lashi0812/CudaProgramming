@@ -4,7 +4,7 @@
         {
             "label": "mkdir build directory",
             "type": "shell",
-            "command" : "mkdir -p ./build"
+            "command": "mkdir -p ./build"
         },
         {
             "label": "Build Hello",
@@ -252,33 +252,34 @@
         },
         {
             "label": "Run Reduce Integer",
-            "type":"shell",
-            "command":"./build/reduceInteger",
+            "type": "shell",
+            "command": "./build/reduceInteger",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Reduce Integer"
             ]
         },
         {
             "label": "Metric Profile For Divergence in Reduce Integer",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
-                
                 "--csv",
-                "--log-file","./profiling/results/ncu_reduceInteger.csv","-f",
+                "--log-file",
+                "./profiling/results/ncu_reduceInteger.csv",
+                "-f",
                 "--metric",
                 "gpu__time_duration.sum,launch__block_size,launch__grid_size,branch_inst_executed,smsp__branch_targets_threads_uniform,smsp__branch_targets_threads_divergent,smsp__sass_average_branch_targets_threads_uniform.pct,sm__warps_active.avg.pct_of_peak_sustained_active,smsp__average_inst_executed_per_warp.ratio,smsp__inst_executed.sum,sm__warps_launched.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second,dram__bytes.sum,dram__bytes_read.sum.per_second,smsp__sass_inst_executed_op_ld.sum,smsp__warp_issue_stalled_barrier_per_warp_active.pct,smsp__warp_issue_stalled_membar_per_warp_active.pct,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct",
                 "./build/reduceInteger",
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Reduce Integer"
             ]
         },
         // Memory Transfer
         {
             "label": "Build Memory Transfer",
-            "command":"nvcc",
+            "command": "nvcc",
             "args": [
                 "-O3",
                 "./csrc/memTransfer.cu",
@@ -290,15 +291,15 @@
         {
             "label": "Run Memory Transfer",
             "type": "shell",
-            "command":"./build/memTransfer ${input:memory_size}",
+            "command": "./build/memTransfer ${input:memory_size}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Memory Transfer"
             ]
         },
         {
             "label": "System Profile for Memory Transfer",
-            "command":"nsys",
+            "command": "nsys",
             "args": [
                 "profile",
                 "--stats",
@@ -311,14 +312,14 @@
                 "${input:memory_size}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Memory Transfer"
             ]
         },
         // Pinned Memory Transfer
         {
             "label": "Build Pinned Memory Transfer",
-            "command":"nvcc",
+            "command": "nvcc",
             "args": [
                 "-O3",
                 "./csrc/pinMemory.cu",
@@ -326,22 +327,22 @@
                 "./build/pinMemory"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "mkdir build directory",
             ]
         },
         {
             "label": "Run Pinned Memory Transfer",
             "type": "shell",
-            "command":"./build/pinMemory ${input:memory_size}",
+            "command": "./build/pinMemory ${input:memory_size}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Pinned Memory Transfer"
             ]
         },
         {
             "label": "System Profile for Pinned Memory Transfer",
-            "command":"nsys",
+            "command": "nsys",
             "args": [
                 "profile",
                 "--stats",
@@ -354,14 +355,14 @@
                 "${input:memory_size}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Pinned Memory Transfer"
             ]
         },
         // Zero Copy 
         {
             "label": "Build Sum Array Zero Copy",
-            "command":"nvcc",
+            "command": "nvcc",
             "args": [
                 "-O3",
                 "./csrc/sumArrayZeroCopy.cu",
@@ -369,7 +370,7 @@
                 "./build/sumArrayZeroCopy"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "mkdir build directory",
             ]
         },
@@ -378,13 +379,13 @@
             "type": "shell",
             "command": "./build/sumArrayZeroCopy ${input:array_size}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Sum Array Zero Copy"
             ]
         },
         {
             "label": "System profile for Sum Array Zero Copy",
-            "command":"nsys",
+            "command": "nsys",
             "args": [
                 "profile",
                 "-t",
@@ -399,7 +400,7 @@
                 "${input:array_size}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Sum Array Zero Copy"
             ]
         },
@@ -417,39 +418,41 @@
                 "./build/readWriteOffset_${input:cacheModifier}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "mkdir build directory"
             ]
         },
         {
             "label": "Run Read Write Offset",
             "type": "shell",
-            "command":"./build/readWriteOffset_${input:cacheModifier} ${input:offset} ${input:blockdim.x}",
+            "command": "./build/readWriteOffset_${input:cacheModifier} ${input:offset} ${input:blockdim.x}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Read Write Offset With dlcm flags"
             ]
         },
         {
             "label": "Metric Profile for Read Write Offset",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "--csv",
-                "--log-file","./profiling/results/ncu_readWriteOffset_${input:cacheModifier}.csv","-f",
+                "--log-file",
+                "./profiling/results/ncu_readWriteOffset_${input:cacheModifier}.csv",
+                "-f",
                 "--metric",
                 "gpu__time_duration.sum,dram__bytes_read.sum,dram__sectors_read.sum,dramc__sectors_op_read.sum,fbpa__dram_read_bytes.sum,fbpa__dram_read_sectors.sum,l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum,l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum,l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum,smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct,l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio,lts__t_bytes_pipe_lsu_mem_global_op_ld.sum",
                 "./build/readWriteOffset_${input:cacheModifier}",
                 "${input:offset}",
-                "${input:blockdim.x}"                
+                "${input:blockdim.x}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Read Write Offset With dlcm flags"
             ]
         },
         {
             "label": "Metric Profile Sections for Read Write Offset",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "-o",
                 "./profiling/profiles/readWriteOffset_${input:cacheModifier}",
@@ -459,11 +462,99 @@
                 "./profiling/configs/readWriteOffset.ncu-cfg",
                 "./build/readWriteOffset_${input:cacheModifier}",
                 "${input:offset}",
-                "${input:blockdim.x}"                
+                "${input:blockdim.x}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Read Write Offset With dlcm flags"
+            ]
+        },
+        // Simple AOS
+        {
+            "label": "Build Simple AOS",
+            "command": "nvcc",
+            "args": [
+                "-O3",
+                "-g",
+                "-G",
+                "./csrc/simpleAOS.cu",
+                "-o",
+                "./build/simpleAOS"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "mkdir build directory"
+            ]
+        },
+        {
+            "label": "Run Simple AOS",
+            "type": "shell",
+            "command": "./build/simpleAOS ${input:blockdim.x}",
+            "group": "build",
+            "dependsOn": [
+                "BUild Simple AOS"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Simple AOS",
+            "command": "ncu",
+            "args": [
+                "-o",
+                "./profiling/profiles/simpleAOS",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/simpleAOS.ncu-cfg",
+                "./build/simpleAOS",
+                "${input:blockdim.x}"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "Build Simple AOS"
+            ]
+        },
+        // Simple SoA
+        {
+            "label": "Build Simple SOA",
+            "command": "nvcc",
+            "args": [
+                "-O3",
+                "-g",
+                "-G",
+                "./csrc/simpleSOA.cu",
+                "-o",
+                "./build/simpleSOA"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "mkdir build directory"
+            ]
+        },
+        {
+            "label": "Run Simple SOA",
+            "type": "shell",
+            "command": "./build/simpleSOA ${input:blockdim.x}",
+            "group": "build",
+            "dependsOn": [
+                "BUild Simple SOA"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Simple SOA",
+            "command": "ncu",
+            "args": [
+                "-o",
+                "./profiling/profiles/simpleSOA",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/simpleSOA.ncu-cfg",
+                "./build/simpleSOA",
+                "${input:blockdim.x}"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "Build Simple SOA"
             ]
         }
     ],
@@ -530,7 +621,7 @@
         },
         {
             "type": "pickString",
-            "id":"cacheModifier",
+            "id": "cacheModifier",
             "description": "Enable/disable L1 Cache",
             "default": "ca",
             "options": [

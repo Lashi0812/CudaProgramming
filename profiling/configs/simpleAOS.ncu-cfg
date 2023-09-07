@@ -1,0 +1,4 @@
+[Launch-and-attach]
+-f
+--section = LoadMetrics,StoreMetrics
+--section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/
