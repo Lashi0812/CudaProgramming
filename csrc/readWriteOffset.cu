@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void initialData(float *A, const unsigned  long int N)
+void initialData(float *A, const unsigned long int N)
 {
     for (unsigned long int i = 0; i < N; i++)
     {
@@ -11,12 +11,20 @@ void initialData(float *A, const unsigned  long int N)
     }
 }
 
-__global__ void readOffset(float *A, float *B, float *C, const unsigned  long int N, const int offset)
+__global__ void readOffset(float *A, float *B, float *C, const unsigned long int N, const int offset)
 {
     unsigned long int tid = blockDim.x * blockIdx.x + threadIdx.x;
     unsigned long int k = tid + offset;
     if (k < N)
         C[tid] = A[k] + B[k];
+}
+
+__global__ void readOnlyCache(float *A, float *B, float *C, const unsigned long int N, const int offset)
+{
+    unsigned long tid = blockDim.x * blockIdx.x + threadIdx.x;
+    unsigned long int k = tid + offset;
+    if (k < N)
+        C[tid] = __ldg(&A[k]) + __ldg(&B[k]);
 }
 
 int main(int argc, char *argv[])
@@ -34,7 +42,7 @@ int main(int argc, char *argv[])
     size_t nBytes = nElems * sizeof(float);
     printf("Array size %ld of %zu bytes\n", nElems, nBytes);
 
-    // set block size and offset 
+    // set block size and offset
     // expect offset format 0,11,128
     char *input = argv[1];
     int blockSize = atoi(argv[2]);
@@ -66,14 +74,19 @@ int main(int argc, char *argv[])
     int offset;
     token = strtok(input, ",");
     while (token != NULL)
-    {   
+    {
         offset = atoi(token);
-        // launch the kernel
-        printf("Launch Kernel<<<%d,%d>>> with %d offset\n",grid.x,block.x,offset);
+        // launch the kernel 1 : Read Offset
+        printf("Launch Kernel<<<%d,%d>>> with %d offset\n", grid.x, block.x, offset);
         readOffset<<<grid, block>>>(d_A, d_B, d_C, nElems, offset);
         CHECK(cudaDeviceSynchronize());
 
-        token = strtok(NULL,",");
+        // Launch Kernel 2 : Read only Cache
+        printf("Launch Kernel<<<%d,%d>>> with %d offset\n", grid.x, block.x, offset);
+        readOnlyCache<<<grid, block>>>(d_A, d_B, d_C, nElems, offset);
+        CHECK(cudaDeviceSynchronize());
+
+        token = strtok(NULL, ",");
     }
 
     cudaFree(d_A);
