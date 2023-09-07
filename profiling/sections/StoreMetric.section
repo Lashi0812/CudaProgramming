@@ -69,15 +69,15 @@ Body{
             }
             Metrics{
                 Label:"# GInst Exec"
-                Name:"smsp__inst_executed_op_generic_ld.sum"
+                Name:"smsp__inst_executed_op_generic_st.sum"
             }
             Metrics{
                 Label:"# GInst Exec When thread pred off"
-                Name:"smsp__inst_executed_op_generic_ld_pred_off_all.sum"
+                Name:"smsp__inst_executed_op_generic_st_pred_off_all.sum"
             }
             Metrics{
                 Label:"# GInst Exec When atleast a thread pred on"
-                Name:"smsp__inst_executed_op_generic_ld_pred_on_any.sum"
+                Name:"smsp__inst_executed_op_generic_st_pred_on_any.sum"
             }
         }
     }
@@ -90,43 +90,43 @@ Body{
             Order:ColumnMajor
             Metrics{
                 Label:"Bytes Requested per request"
-                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum"
+                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_st.sum"
             }
             Metrics{
                 Label:"Bytes Hits"
-                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_ld_lookup_hit.sum"
+                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_st_lookup_hit.sum"
             }
             Metrics{
                 Label:"Bytes Miss"
-                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_ld_lookup_miss.sum"
+                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_st_lookup_miss.sum"
             }
             Metrics{
                 Label:"Sectors Requested per request"
-                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sum"
+                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_st.sum"
             }
             Metrics{
                 Label:"Sectors Hits"
-                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_ld_lookup_hit.sum"
+                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_st_lookup_hit.sum"
             }
             Metrics{
                 Label:"Sectors Miss"
-                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_ld_lookup_miss.sum"
+                Name:"l1tex__t_sectors_pipe_lsu_mem_global_op_st_lookup_miss.sum"
             }
             Metrics{
                 Label:"Requested requests"
-                Name:"l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum"
+                Name:"l1tex__t_requests_pipe_lsu_mem_global_op_st.sum"
             }
             Metrics{
                 Label:"sector/req"
-                Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio"
+                Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_st.ratio"
             }
             Metrics{
                 Label:"Sector Hit Rate"
-                Name:"l1tex__t_sector_pipe_lsu_mem_global_op_ld_hit_rate.pct"
+                Name:"l1tex__t_sector_pipe_lsu_mem_global_op_st_hit_rate.pct"
             }
             # Metrics{
             #     Label:"L1 cache access"
-            #     Name:"l1tex__t_set_accesses_pipe_lsu_mem_global_op_ld.sum"
+            #     Name:"l1tex__t_set_accesses_pipe_lsu_mem_global_op_st.sum"
             # }          
         }
     }

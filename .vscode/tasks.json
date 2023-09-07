@@ -556,6 +556,52 @@
             "dependsOn": [
                 "Build Simple SOA"
             ]
+        },
+        // offset unroll
+        {
+            "label": "Build Offset Unroll",
+            "command":"nvcc",
+            "args": [
+                "-O3",
+                "-g",
+                "-G",
+                "./csrc/readSegmentUnroll.cu",
+                "-o",
+                "./build/readSegmentUnroll"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "mkdir build directory"
+            ]
+        },
+        {
+            "label": "Run Offset Unroll",
+            "type": "shell",
+            "command":"./build/readSegmentUnroll ${input:dataSizes} ${input:blockSizes} ${input:offset}",
+            "group": "build",
+            "dependsOn":[
+                "Build Offset Unroll"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Offset Unroll",
+            "command":"ncu",
+            "args": [
+                "-o",
+                "./profiling/profiles/readSegmentUnroll",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/readSegmentUnroll.ncu-cfg",
+                "./build/readSegmentUnroll",
+                "${input:dataSizes}",
+                "${input:blockSizes}",
+                "${input:offset}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "Build Offset Unroll"
+            ]
         }
     ],
     "inputs": [
@@ -634,6 +680,18 @@
             "id": "offset",
             "description": "differnet offset byte read/write eg : 0,11,128",
             "default": "0,11,128"
+        },
+        {
+            "type": "promptString",
+            "id": "dataSizes",
+            "description": "differnet dataSizes in log base eg, 22,23",
+            "default": "22"
+        },
+        {
+            "type": "promptString",
+            "id":"blockSizes",
+            "description": "differnet blockSizes eg, 64,128,256,512",
+            "default": "64,128,256,512"
         }
     ]
 }
