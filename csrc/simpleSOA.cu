@@ -42,7 +42,7 @@ void checkResult(const innerArray *hostRef, const innerArray *gpuRef, const unsi
     printf("Array match\n");
 }
 
-__global__ void testInnerStruct(const innerArray *__restrict__ A, innerArray *B, const unsigned int N)
+__global__ void testInnerArray(const innerArray *__restrict__ A, innerArray *B, const unsigned int N)
 {
     unsigned int tid = blockDim.x * blockIdx.x + threadIdx.x;
     if (tid < N)
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
     // launch the kernel
     printf("Launching testInnerStruct<<<%d,%d>>> \n", grid.x, block.x);
-    testInnerStruct<<<grid, block>>>(d_A, d_B, nElem);
+    testInnerArray<<<grid, block>>>(d_A, d_B, nElem);
     CHECK(cudaDeviceSynchronize());
 
     // copy back the result
