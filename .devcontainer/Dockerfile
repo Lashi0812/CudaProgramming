@@ -64,3 +64,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     rm /workspace/systems.deb
 
 
+# set cuda env in .zshrc
+RUN echo 'export PATH=/usr/local/cuda-12.1/bin${PATH:+:${PATH}}' >> /root/.zshrc && \
+    echo 'export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> /root/.zshrc && \
+    echo 'export CUDA_HOME=/usr/local/cuda' >> /root/.zshrc

@@ -29,7 +29,8 @@
         }
     },
     "mounts": [
-        "source=/mnt/drive/data,target=/mnt/data,type=bind,consistency=cached"
+        "source=/mnt/drive/data,target=/mnt/data,type=bind,consistency=cached",
+        "source=projectname-bashhistory,target=/commandhistory,type=volume"
     ],
     "runArgs": ["--env-file",".devcontainer/devcontainer.env"
     // ,"--runtime=nvidia" // nvidia-container-toolkit

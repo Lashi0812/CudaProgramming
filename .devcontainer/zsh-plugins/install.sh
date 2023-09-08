@@ -77,12 +77,13 @@ fi
 
 # Activate zsh plugins from PLUGINS
 
-sed -i '/^ZSH_THEME/c\ZSH_THEME="powerlevel10k/powerlevel10k"' ~/.zshrc 
+sed -i '/^ZSH_THEME/c\ZSH_THEME="powerlevel10k/powerlevel10k"' "$ZSH_CONFIG"
 sed -i '1i\
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then\
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"\
-fi' ~/.zshrc 
+fi' "$ZSH_CONFIG" 
 sed -i '$a\
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' ~/.zshrc
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' "$ZSH_CONFIG"
 
 sed -i -e "s/plugins=.*/plugins=(git ${PLUGINS})/g" "$ZSH_CONFIG"
+cat "$ZSH_CONFIG".pre-oh-my-zsh >> "$ZSH_CONFIG"
