@@ -1,0 +1,5 @@
+[Launch-and-attach]
+-f
+--import-source = yes
+--section = LoadMetrics,StoreMetrics,DeviceMemoryTable,FrameBufferPartition
+--section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/

@@ -159,6 +159,14 @@ Body{
                 Label:"Load Efficiency"
                 Name:"smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct"
             }
+            Metrics{
+                Label:"Accessing device for read"
+                Name:"lts__t_requests_aperture_device_op_read.sum"
+            }
+            Metrics{
+                Label:"Accessing device for write"
+                Name:"lts__t_requests_aperture_device_op_write.sum"
+            }
         }
     }
 }

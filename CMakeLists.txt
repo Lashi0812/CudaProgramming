@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.26)
+project(My_Project CUDA CXX)
+# project(My_Project CUDA CXX)
+set(CMAKE_PREFIX_PATH /usr/local/lib/python3.10/dist-packages/torch/share/cmake)
+# set(CMAKE_PREFIX_PATH /home/lashi/miniconda3/envs/nlp/lib/python3.11/site-packages/torch/share/cmake)
+
+# find_package(CUDAToolkit REQUIRED)
+find_package(Torch REQUIRED)
+
+
+
+# common to all 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
+# transpose.cu
+# message("FLAGS  "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS})
+# message("Torch libraries " ${TORCH_LIBRARIES})
+add_executable(transpose ./csrc/transpose.cu)
+set_target_properties(transpose PROPERTIES CXX_STANDARD 17 CUDA_ARCHITECTURES 89)
+target_compile_options(transpose PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--generate-line-info>)
+target_link_libraries(transpose "${TORCH_LIBRARIES}")
+
+
+
+
+
+
+
+
+
+
+# option(SOURCE_FILE_PATH "Specify the source file path")
+# option(ENABLE_TORCH "ENABLE Torch Library" OFF)
+# # message("Hello " ${CMAKE_PREFIX_PATH})
+
+
+# find_package(CUDAToolkit REQUIRED)
+# if(ENABLE_TORCH)
+#     set(CMAKE_PREFIX_PATH /usr/local/lib/python3.10/dist-packages/torch/share/cmake)
+#     find_package(Torch REQUIRED)
+#     message(STATUS "Torch found")
+# endif()
+
+
+# if(SOURCE_FILE_PATH)
+#     cmake_path(GET SOURCE_FILE_PATH FILENAME filename)
+#     cmake_path(REMOVE_EXTENSION filename)
+#     project(${filename})
+#     message("Setting the project name as : " ${filename})
+# endif()
+
+# 
+# find_package(CUDAToolkit REQUIRED)
+# find_package(Torch REQUIRED)

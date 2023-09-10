@@ -602,6 +602,43 @@
             "dependsOn":[
                 "Build Offset Unroll"
             ]
+        },
+        // transpose 
+        {
+            "label": "CMake Clean Build transpose",
+            "type": "shell",
+            "command" : "rm -rf ./build && cmake -S . -B ./build && cd ./build && make",
+            "group": "build"
+        },
+        {
+            "label": "Run transpose",
+            "type": "shell",
+            "command": "./build/transpose ${input:kernel} ${input:blockdim.x} ${input:blockdim.y}",
+            "group": "build",
+            "dependsOn":[
+                "CMake Clean Build transpose"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Transpose",
+            "command":"ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/transpose",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/transpose.ncu-cfg",
+                "./build/transpose",
+                "${input:kernel}",
+                "${input:blockdim.x}",
+                "${input:blockdim.y}"
+            ],
+            "group": "build",
+            "dependsOn":[
+                "CMake Clean Build transpose"
+            ]
         }
     ],
     "inputs": [
@@ -692,6 +729,12 @@
             "id":"blockSizes",
             "description": "differnet blockSizes eg, 64,128,256,512",
             "default": "64,128,256,512"
+        },
+        {
+            "type": "promptString",
+            "id": "kernel",
+            "default": "0",
+            "description": "Please check transpose.cu for kernel switch"
         }
     ]
 }
