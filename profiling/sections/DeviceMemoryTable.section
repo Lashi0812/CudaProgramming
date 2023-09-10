@@ -1,0 +1,11 @@
+Identifier: "DeviceMemoryTable"
+DisplayName: "Device Memory Table"
+Description: "Actual data read write in dram"
+
+Body{
+    Items{
+        MemoryDeviceMemoryTable{
+            Label:"Actual Memory access from Device"
+        }
+    }
+}

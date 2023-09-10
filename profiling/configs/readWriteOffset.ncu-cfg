@@ -1,4 +1,4 @@
 [Launch-and-attach]
 -f
---section = LoadMetrics
+--section = LoadMetrics,DeviceMemoryTable
 --section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/
