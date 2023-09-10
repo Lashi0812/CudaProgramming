@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     int dev = 0;
     cudaDeviceProp devProp;
 
-    CHECK(cudaSetDevice(dev));
-    CHECK(cudaGetDeviceProperties_v2(&devProp, dev));
+    CHECK_ERROR(cudaSetDevice(dev));
+    CHECK_ERROR(cudaGetDeviceProperties_v2(&devProp, dev));
     printf("Using device %d : %s\n", dev, devProp.name);
 
     // set up array size
@@ -62,13 +62,13 @@ int main(int argc, char *argv[])
 
     // allocate the device memory
     float *d_A, *d_B, *d_C;
-    CHECK(cudaMalloc((void **)&d_A, nBytes));
-    CHECK(cudaMalloc((void **)&d_B, nBytes));
-    CHECK(cudaMalloc((void **)&d_C, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_A, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_B, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_C, nBytes));
 
     // transfer data from host to device
-    CHECK(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
-    CHECK(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
 
     char *token;
     int offset;
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
         // launch the kernel 1 : Read Offset
         printf("Launch Kernel<<<%d,%d>>> with %d offset\n", grid.x, block.x, offset);
         readOffset<<<grid, block>>>(d_A, d_B, d_C, nElems, offset);
-        CHECK(cudaDeviceSynchronize());
+        CHECK_ERROR(cudaDeviceSynchronize());
 
         // Launch Kernel 2 : Read only Cache
         printf("Launch Kernel<<<%d,%d>>> with %d offset\n", grid.x, block.x, offset);
         readOnlyCache<<<grid, block>>>(d_A, d_B, d_C, nElems, offset);
-        CHECK(cudaDeviceSynchronize());
+        CHECK_ERROR(cudaDeviceSynchronize());
 
         token = strtok(NULL, ",");
     }
@@ -95,6 +95,6 @@ int main(int argc, char *argv[])
     free(h_A);
     free(h_B);
 
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

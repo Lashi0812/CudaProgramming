@@ -116,13 +116,13 @@ int main(int argc, char *argv[])
 
         // allocate on device size
         float *d_A, *d_B, *d_C;
-        CHECK(cudaMalloc((void **)&d_A, nBytes));
-        CHECK(cudaMalloc((void **)&d_B, nBytes));
-        CHECK(cudaMalloc((void **)&d_C, nBytes));
+        CHECK_ERROR(cudaMalloc((void **)&d_A, nBytes));
+        CHECK_ERROR(cudaMalloc((void **)&d_B, nBytes));
+        CHECK_ERROR(cudaMalloc((void **)&d_C, nBytes));
 
         // copy the data from host to device
-        CHECK(cudaMemcpy(d_A, h_A.data(), nBytes, cudaMemcpyHostToDevice));
-        CHECK(cudaMemcpy(d_B, h_B.data(), nBytes, cudaMemcpyHostToDevice));
+        CHECK_ERROR(cudaMemcpy(d_A, h_A.data(), nBytes, cudaMemcpyHostToDevice));
+        CHECK_ERROR(cudaMemcpy(d_B, h_B.data(), nBytes, cudaMemcpyHostToDevice));
 
         for (const int &blockSize : blockSizes)
         {
@@ -134,14 +134,14 @@ int main(int argc, char *argv[])
             {
                 sumArrayOnHost(h_A, h_B, hostRef, offset);
                 gpuRef.clear();
-                CHECK(cudaMemset(d_C, 0, nBytes));
+                CHECK_ERROR(cudaMemset(d_C, 0, nBytes));
                 // launch the kernel : readOffset
                 std::cout << "Launching readOffset <<<" << grid.x << "," << block.x << ">>> with offset " << offset << std::endl;
                 readOffset<<<grid, block>>>(d_A, d_B, d_C, offset, nElems);
-                CHECK(cudaDeviceSynchronize());
+                CHECK_ERROR(cudaDeviceSynchronize());
                 
 
-                CHECK(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
+                CHECK_ERROR(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
 
                 bool check = std::equal(hostRef.begin(), hostRef.end(), gpuRef.begin(), gpuRef.end(),
                                         [](const double &a, const double &b)
@@ -156,15 +156,15 @@ int main(int argc, char *argv[])
                     std::cout << "Array do match for readOffset" << std::endl;
                 }
                 gpuRef.clear();
-                CHECK(cudaMemset(d_C, 0, nBytes));
+                CHECK_ERROR(cudaMemset(d_C, 0, nBytes));
 
                 // launch the kernel : readOffsetUnroll2
                 int unroll = 2;
                 std::cout << "Launching readOffsetUnroll2 <<<" << grid.x / unroll << "," << block.x << ">>> with offset " << offset << std::endl;
                 readOffsetUnroll2<<<grid.x / unroll, block>>>(d_A, d_B, d_C, offset, nElems);
-                CHECK(cudaDeviceSynchronize();)
+                CHECK_ERROR(cudaDeviceSynchronize();)
 
-                CHECK(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
+                CHECK_ERROR(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
 
                 check = std::equal(hostRef.begin(), hostRef.end(), gpuRef.begin(), gpuRef.end(),
                                    [](const double &a, const double &b)
@@ -179,15 +179,15 @@ int main(int argc, char *argv[])
                     std::cout << "Array do match for readOffsetUnroll2" << std::endl;
                 }
                 gpuRef.clear();
-                CHECK(cudaMemset(d_C, 0, nBytes));
+                CHECK_ERROR(cudaMemset(d_C, 0, nBytes));
 
                 // launch the kernel : readOffsetUnroll4
                 unroll = 4;
                 std::cout << "Launching readOffsetUnroll4 <<<" << grid.x / unroll << "," << block.x << ">>> with offset " << offset << std::endl;
                 readOffsetUnroll4<<<grid.x / unroll, block>>>(d_A, d_B, d_C, offset, nElems);
-                CHECK(cudaDeviceSynchronize());
+                CHECK_ERROR(cudaDeviceSynchronize());
 
-                CHECK(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
+                CHECK_ERROR(cudaMemcpy(&gpuRef[0], d_C, nBytes, cudaMemcpyDeviceToHost));
 
                 check = std::equal(hostRef.begin(), hostRef.end(), gpuRef.begin(), gpuRef.end(),
                                    [](const double &a, const double &b)
@@ -202,13 +202,13 @@ int main(int argc, char *argv[])
                     std::cout << "Array do match for readOffsetUnroll4" << std::endl;
                 }
                 gpuRef.clear();
-                CHECK(cudaMemset(d_C, 0, nBytes));
+                CHECK_ERROR(cudaMemset(d_C, 0, nBytes));
             }
         }
-        CHECK(cudaFree(d_A));
-        CHECK(cudaFree(d_B));
-        CHECK(cudaFree(d_C));
+        CHECK_ERROR(cudaFree(d_A));
+        CHECK_ERROR(cudaFree(d_B));
+        CHECK_ERROR(cudaFree(d_C));
     }
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     // set up device
     int dev = 0;
-    CHECK(cudaSetDevice(dev));
+    CHECK_ERROR(cudaSetDevice(dev));
 
     if (argc != 2) {
         printf("usage: %s <size-in-mbs>\n", argv[0]);
@@ -21,12 +21,12 @@ int main(int argc, char **argv)
 
     // get device information
     cudaDeviceProp deviceProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev));
+    CHECK_ERROR(cudaGetDeviceProperties(&deviceProp, dev));
 
     if (!deviceProp.canMapHostMemory)
     {
         printf("Device %d does not support mapping CPU host memory!\n", dev);
-        CHECK(cudaDeviceReset());
+        CHECK_ERROR(cudaDeviceReset());
         exit(EXIT_SUCCESS);
     }
 
@@ -38,13 +38,13 @@ int main(int argc, char **argv)
     // allocate pinned host memory
     float *h_a;
     double start = seconds();
-    CHECK(cudaMallocHost ((float **)&h_a, nbytes));
+    CHECK_ERROR(cudaMallocHost ((float **)&h_a, nbytes));
     double elapsed = seconds() - start;
     printf("Host memory allocation took %2.10f us\n", elapsed * 1000000.0);
 
     // allocate device memory
     float *d_a;
-    CHECK(cudaMalloc((float **)&d_a, nbytes));
+    CHECK_ERROR(cudaMalloc((float **)&d_a, nbytes));
 
     // initialize host memory
     memset(h_a, 0, nbytes);
@@ -52,19 +52,19 @@ int main(int argc, char **argv)
     for (int i = 0; i < nbytes / sizeof(float); i++) h_a[i] = 100.10f;
 
     // transfer data from the host to the device
-    CHECK(cudaMemcpy(d_a, h_a, nbytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_a, h_a, nbytes, cudaMemcpyHostToDevice));
 
     // transfer data from the device to the host
-    CHECK(cudaMemcpy(h_a, d_a, nbytes, cudaMemcpyDeviceToHost));
+    CHECK_ERROR(cudaMemcpy(h_a, d_a, nbytes, cudaMemcpyDeviceToHost));
 
     // free memory
-    CHECK(cudaFree(d_a));
+    CHECK_ERROR(cudaFree(d_a));
     start = seconds();
-    CHECK(cudaFreeHost(h_a));
+    CHECK_ERROR(cudaFreeHost(h_a));
     elapsed = seconds() - start;
     printf("Host memory deallocation took %2.10f us\n", elapsed * 1000000.0);
 
     // reset device
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

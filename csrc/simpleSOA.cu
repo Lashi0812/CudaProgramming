@@ -71,11 +71,11 @@ int main(int argc, char *argv[])
 
     // allocate on device memory
     innerArray *d_A, *d_B;
-    CHECK(cudaMalloc((innerArray **)&d_A, nBytes));
-    CHECK(cudaMalloc((innerArray **)&d_B, nBytes));
+    CHECK_ERROR(cudaMalloc((innerArray **)&d_A, nBytes));
+    CHECK_ERROR(cudaMalloc((innerArray **)&d_B, nBytes));
 
     // copy data from host to device
-    CHECK(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
 
     // execution configuration
     int blockSize = 512;
@@ -88,10 +88,10 @@ int main(int argc, char *argv[])
     // launch the kernel
     printf("Launching testInnerStruct<<<%d,%d>>> \n", grid.x, block.x);
     testInnerArray<<<grid, block>>>(d_A, d_B, nElem);
-    CHECK(cudaDeviceSynchronize());
+    CHECK_ERROR(cudaDeviceSynchronize());
 
     // copy back the result
-    CHECK(cudaMemcpy(gpuRef, d_B, nBytes, cudaMemcpyDeviceToHost));
+    CHECK_ERROR(cudaMemcpy(gpuRef, d_B, nBytes, cudaMemcpyDeviceToHost));
 
     checkResult(hostRef, gpuRef, nElem);
 
@@ -102,6 +102,6 @@ int main(int argc, char *argv[])
     free(hostRef);
     free(gpuRef);
 
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

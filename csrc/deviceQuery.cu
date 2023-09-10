@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     printf(" CUDA Device Query (Runtime API) version (CUDART static linking)\n\n");
 
     int deviceCount = 0;
-    CHECK(cudaGetDeviceCount(&deviceCount));
+    CHECK_ERROR(cudaGetDeviceCount(&deviceCount));
 
     if (deviceCount == 0)
     {
@@ -26,9 +26,9 @@ int main(int argc, char **argv)
     int driverVersion = 0, runtimeVersion = 0;
     for (int dev = 0; dev < deviceCount; ++dev)
     {
-        CHECK(cudaSetDevice(dev));
+        CHECK_ERROR(cudaSetDevice(dev));
         cudaDeviceProp deviceProp;
-        CHECK(cudaGetDeviceProperties(&deviceProp, dev));
+        CHECK_ERROR(cudaGetDeviceProperties(&deviceProp, dev));
 
         printf("\nDevice %d: \"%s\"\n", dev, deviceProp.name);
 

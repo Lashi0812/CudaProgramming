@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     // setup the device
     int dev = 0;
     cudaDeviceProp deviceProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev));
+    CHECK_ERROR(cudaGetDeviceProperties(&deviceProp, dev));
     printf("%s using device %d : %s\n", argv[0], dev, deviceProp.name);
 
     // set time measure
@@ -109,39 +109,39 @@ int main(int argc, char *argv[])
     // cudaEventRecord(start,0);
     warmingUp<<<grid, block>>>(d_C);
     // cudaEventRecord(stop,0);
-    // CHECK(cudaEventSynchronize(stop));
+    // CHECK_ERROR(cudaEventSynchronize(stop));
 
     // cudaEventElapsedTime(&elaspedTime, start,stop);
     // printf("Kernel 2       <<<%d,%d>>> elapsed %f ms \n",
     //        grid.x, block.x, elaspedTime);
-    // CHECK(cudaGetLastError());
+    // CHECK_ERROR(cudaGetLastError());
 
     // run  kernel 1
     // cudaEventRecord(start,0);
     kernel1<<<grid, block>>>(d_C);
     // cudaEventRecord(stop,0);
-    // CHECK(cudaEventSynchronize(stop));
+    // CHECK_ERROR(cudaEventSynchronize(stop));
 
     // cudaEventElapsedTime(&elaspedTime, start,stop);
     // printf("Kernel 2       <<<%d,%d>>> elapsed %f ms \n",
     //        grid.x, block.x, elaspedTime);
-    // CHECK(cudaGetLastError());
+    // CHECK_ERROR(cudaGetLastError());
 
     // run  kernel 2
     // cudaEventRecord(start,0);
     kernel2<<<grid, block>>>(d_C);
     // cudaEventRecord(stop,0);
-    // CHECK(cudaEventSynchronize(stop));
+    // CHECK_ERROR(cudaEventSynchronize(stop));
 
     // cudaEventElapsedTime(&elaspedTime, start,stop);
     // printf("Kernel 2       <<<%d,%d>>> elapsed %f ms \n",
     //        grid.x, block.x, elaspedTime);
-    // CHECK(cudaGetLastError());
+    // CHECK_ERROR(cudaGetLastError());
 
     kernel3<<<grid, block>>>(d_C);
 
     // Free Gpu memory
-    CHECK(cudaFree(d_C));
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaFree(d_C));
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

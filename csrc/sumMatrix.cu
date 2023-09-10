@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     // setup the device
     int dev = 0;
     cudaDeviceProp deviceProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev));
+    CHECK_ERROR(cudaGetDeviceProperties(&deviceProp, dev));
     printf("%s using device %d : %s\n", argv[0], dev, deviceProp.name);
 
     unsigned int nx = 1 << 15;
@@ -93,13 +93,13 @@ int main(int argc, char *argv[])
 
     // malloc gpu
     float *d_MatA, *d_MatB, *d_MatC;
-    CHECK(cudaMalloc((void **)&d_MatA, nBytes));
-    CHECK(cudaMalloc((void **)&d_MatB, nBytes));
-    CHECK(cudaMalloc((void **)&d_MatC, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_MatA, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_MatB, nBytes));
+    CHECK_ERROR(cudaMalloc((void **)&d_MatC, nBytes));
 
     // tranfer data from host to device
-    CHECK(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice));
-    CHECK(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_MatA, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice));
 
     dim3 block(atoi(argv[1]), atoi(argv[2]));
     dim3 grid((nx + block.x - 1) / block.x, (ny + block.y - 1) / block.y);
@@ -108,22 +108,22 @@ int main(int argc, char *argv[])
            grid.y,
            block.x, block.y);
     
-    CHECK(cudaDeviceSynchronize());
+    CHECK_ERROR(cudaDeviceSynchronize());
     sumMatrixOnGPU2D<<<grid, block>>>(d_MatA, d_MatB, d_MatC, nx, ny);
-    CHECK(cudaDeviceSynchronize());
+    CHECK_ERROR(cudaDeviceSynchronize());
     printf("sumMatrixOnGPU2D <<<(%d,%d), (%d,%d)>>>\n", grid.x,
            grid.y,
            block.x, block.y);
 
-    CHECK(cudaMemcpy(gpuRef, d_MatC, nBytes, cudaMemcpyDeviceToHost));
+    CHECK_ERROR(cudaMemcpy(gpuRef, d_MatC, nBytes, cudaMemcpyDeviceToHost));
 
     // check the results
     checkResult(hostRef, gpuRef, nxy);
 
     // free gpu memory
-    CHECK(cudaFree(d_MatA));
-    CHECK(cudaFree(d_MatB));
-    CHECK(cudaFree(d_MatC));
+    CHECK_ERROR(cudaFree(d_MatA));
+    CHECK_ERROR(cudaFree(d_MatB));
+    CHECK_ERROR(cudaFree(d_MatC));
 
     // free host memory
     free(h_A);
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
     free(hostRef);
     free(gpuRef);
 
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
 
     return EXIT_SUCCESS;
 }

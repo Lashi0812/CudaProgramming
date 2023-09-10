@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     // set up device
     int dev = 0;
-    CHECK(cudaSetDevice(dev));
+    CHECK_ERROR(cudaSetDevice(dev));
 
     if (argc != 2) {
         printf("usage: %s <size-in-mbs>\n", argv[0]);
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     
     // get device information
     cudaDeviceProp deviceProp;
-    CHECK(cudaGetDeviceProperties(&deviceProp, dev));
+    CHECK_ERROR(cudaGetDeviceProperties(&deviceProp, dev));
     printf("%s starting at ", argv[0]);
     printf("device %d: %s nbyte %5.2fMB\n", dev,
            deviceProp.name, nbytes / (1024.0f * 1024.0f));
@@ -34,19 +34,19 @@ int main(int argc, char **argv)
 
     // allocate the device memory
     float *d_a;
-    CHECK(cudaMalloc((float **)&d_a, nbytes));
+    CHECK_ERROR(cudaMalloc((float **)&d_a, nbytes));
 
     // initialize the host memory
     for(unsigned int i = 0; i < nbytes / sizeof(float); i++) h_a[i] = 0.5f;
 
     // transfer data from the host to the device
-    CHECK(cudaMemcpy(d_a, h_a, nbytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_a, h_a, nbytes, cudaMemcpyHostToDevice));
 
     // transfer data from the device to the host
-    CHECK(cudaMemcpy(h_a, d_a, nbytes, cudaMemcpyDeviceToHost));
+    CHECK_ERROR(cudaMemcpy(h_a, d_a, nbytes, cudaMemcpyDeviceToHost));
 
     // free memory
-    CHECK(cudaFree(d_a));
+    CHECK_ERROR(cudaFree(d_a));
 
     start = seconds();
     free(h_a);
@@ -54,6 +54,6 @@ int main(int argc, char **argv)
     printf("Host memory deallocation took %2.10f us\n", elapsed * 1000000.0);
 
     // reset device
-    CHECK(cudaDeviceReset());
+    CHECK_ERROR(cudaDeviceReset());
     return EXIT_SUCCESS;
 }

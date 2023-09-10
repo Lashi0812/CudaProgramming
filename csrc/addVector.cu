@@ -1,7 +1,7 @@
 #include <cuda_runtime.h>
 #include <stdio.h>
 
-#define CHECK(call)                                                             \
+#define CHECK_ERROR(call)                                                             \
     {                                                                           \
         const cudaError_t error = call;                                         \
         if (error != cudaSuccess)                                               \
@@ -85,24 +85,24 @@ int main(int argc, char *argv[])
 
     // allocat the device memory
     float *d_A, *d_B, *d_C;
-    CHECK(cudaMalloc((float **)(&d_A), nBytes));
-    CHECK(cudaMalloc((float **)(&d_B), nBytes));
-    CHECK(cudaMalloc((float **)(&d_C), nBytes));
+    CHECK_ERROR(cudaMalloc((float **)(&d_A), nBytes));
+    CHECK_ERROR(cudaMalloc((float **)(&d_B), nBytes));
+    CHECK_ERROR(cudaMalloc((float **)(&d_C), nBytes));
 
     // transfer the data host to device
-    CHECK(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
-    CHECK(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
 
     // invoke kernel
     dim3 block(atoi(argv[2]));
     dim3 grid((nElem + block.x - 1) / block.x);
 
     sumArrayOnGPU<<<grid, block>>>(d_A, d_B, d_C, nElem);
-    CHECK(cudaDeviceSynchronize());
+    CHECK_ERROR(cudaDeviceSynchronize());
     printf("Execution Configuration <<<%d,%d>>>\n", grid.x, block.x);
 
     // copy back the result
-    CHECK(cudaMemcpy(gpuRef, d_C, nBytes, cudaMemcpyDeviceToHost);)
+    CHECK_ERROR(cudaMemcpy(gpuRef, d_C, nBytes, cudaMemcpyDeviceToHost);)
 
     // add vecotr in host side
     sumArrayOnHost(h_A, h_B, hostRef, nElem);

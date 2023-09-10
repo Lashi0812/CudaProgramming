@@ -50,16 +50,16 @@ int main(int argc, char *argv[])
 {
     // set up device
     int dev = 0;
-    CHECK(cudaSetDevice(dev));
+    CHECK_ERROR(cudaSetDevice(dev));
 
     cudaDeviceProp devProp;
-    CHECK(cudaGetDeviceProperties(&devProp, dev));
+    CHECK_ERROR(cudaGetDeviceProperties(&devProp, dev));
 
     // check for support pinned memory
     if (!devProp.canMapHostMemory)
     {
         printf("Device %d does not support mapping CPU Host memory!\n", dev);
-        CHECK(cudaDeviceReset());
+        CHECK_ERROR(cudaDeviceReset());
         exit(EXIT_FAILURE);
     }
 
@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
 
     // deivce side
     float *d_A, *d_B, *d_C;
-    CHECK(cudaMalloc((float **)&d_A, nBytes));
-    CHECK(cudaMalloc((float **)&d_B, nBytes));
-    CHECK(cudaMalloc((float **)&d_C, nBytes));
+    CHECK_ERROR(cudaMalloc((float **)&d_A, nBytes));
+    CHECK_ERROR(cudaMalloc((float **)&d_B, nBytes));
+    CHECK_ERROR(cudaMalloc((float **)&d_C, nBytes));
 
     // transfer the data HOST to DEVICE
-    CHECK(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
-    CHECK(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_A, h_A, nBytes, cudaMemcpyHostToDevice));
+    CHECK_ERROR(cudaMemcpy(d_B, h_B, nBytes, cudaMemcpyHostToDevice));
 
     // kernel configuration
     dim3 block(512);
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
     sumArrays<<<grid, block>>>(d_A, d_B, d_C, nElem);
 
     // get back the results
-    CHECK(cudaMemcpy(gpuRef, d_C, nBytes, cudaMemcpyDeviceToHost));
+    CHECK_ERROR(cudaMemcpy(gpuRef, d_C, nBytes, cudaMemcpyDeviceToHost));
 
     // check the result
     checkResult(hostRef, gpuRef, nElem);
@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
     memset(hostRef, 0, nBytes);
 
     // get the data pointer of HOST and passing to device
-    CHECK(cudaHostGetDevicePointer((void **)&d_A, (void *)h_A, 0));
-    CHECK(cudaHostGetDevicePointer((void **)&d_B, (void *)h_B, 0));
+    CHECK_ERROR(cudaHostGetDevicePointer((void **)&d_A, (void *)h_A, 0));
+    CHECK_ERROR(cudaHostGetDevicePointer((void **)&d_B, (void *)h_B, 0));
 
     sumArrayOnHost(h_A, h_B, hostRef, nElem);
 
