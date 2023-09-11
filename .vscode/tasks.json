@@ -605,9 +605,9 @@
         },
         // transpose 
         {
-            "label": "CMake Clean Build",
+            "label": "CMake Build",
             "type": "shell",
-            "command" : "rm -rf ./build && cmake -S . -B ./build && cd ./build && make",
+            "command" : "cmake -S . -B ./build && cd ./build && make",
             "group": "build"
         },
         {
@@ -616,7 +616,7 @@
             "command": "./build/transpose ${input:kernel} ${input:blockdim.x} ${input:blockdim.y}",
             "group": "build",
             "dependsOn":[
-                "CMake Clean Build transpose"
+                "CMake Build"
             ]
         },
         {
@@ -637,12 +637,37 @@
             ],
             "group": "build",
             "dependsOn":[
-                "CMake Clean Build transpose"
+                "CMake Build"
             ]
         },
-        // smemSquare
         {
-            "label": "Ca"
+            "label": "Run Shared Memory Square",
+            "type": "shell",
+            "command":"./build/smemSquare ${input:verbose}",
+            "group": "build",
+            "dependsOn":[
+                "CMake Build"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Shared Memory Square",
+            "command":"ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/smemSquare",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/smemSquare.ncu-cfg",
+                "./build/smemSquare",
+                "${input:verbose}",
+                
+            ],
+            "group": "build",
+            "dependsOn":[
+                "CMake Build"
+            ]
         }
     ],
     "inputs": [
@@ -739,6 +764,12 @@
             "id": "kernel",
             "default": "0",
             "description": "Please check transpose.cu for kernel switch"
+        },
+        {
+            "type": "promptString",
+            "default": "0",
+            "id": "verbose",
+            "description": "0 for no verbose and 1 for print out"
         }
     ]
 }

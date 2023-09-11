@@ -1,0 +1,5 @@
+[Launch-and-attach]
+-f
+--import-source = yes
+--section = SharedMemAnalysis,LaunchStats
+--section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/

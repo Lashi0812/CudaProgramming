@@ -84,6 +84,10 @@ int main(int argc, char **argv)
 
         printf("  Total amount of constant memory:               %zu KBytes (%zu bytes)\n",
                deviceProp.totalConstMem / 1024, deviceProp.totalConstMem);
+        printf("  Total amount of shared memory per block Optin:       %zu KBytes (%zu bytes)\n",
+               deviceProp.sharedMemPerBlockOptin / 1024, deviceProp.sharedMemPerBlockOptin);
+        printf("  Total amount of Reserved shared memory per block:       %zu KBytes (%zu bytes)\n",
+               deviceProp.reservedSharedMemPerBlock / 1024, deviceProp.reservedSharedMemPerBlock);              
         printf("  Total amount of shared memory per block:       %zu KBytes (%zu bytes)\n",
                deviceProp.sharedMemPerBlock / 1024, deviceProp.sharedMemPerBlock);
         printf("  Total shared memory per multiprocessor:        %zu KBytes (%zu bytes)\n",
