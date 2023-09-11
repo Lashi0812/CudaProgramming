@@ -605,7 +605,7 @@
         },
         // transpose 
         {
-            "label": "CMake Clean Build transpose",
+            "label": "CMake Clean Build",
             "type": "shell",
             "command" : "rm -rf ./build && cmake -S . -B ./build && cd ./build && make",
             "group": "build"
@@ -639,6 +639,10 @@
             "dependsOn":[
                 "CMake Clean Build transpose"
             ]
+        },
+        // smemSquare
+        {
+            "label": "Ca"
         }
     ],
     "inputs": [
