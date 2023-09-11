@@ -640,6 +640,7 @@
                 "CMake Build"
             ]
         },
+        // Shared Memory Square
         {
             "label": "Run Shared Memory Square",
             "type": "shell",
@@ -661,6 +662,36 @@
                 "--config-file-path",
                 "./profiling/configs/smemSquare.ncu-cfg",
                 "./build/smemSquare",
+                "${input:verbose}",
+                
+            ],
+            "group": "build",
+            "dependsOn":[
+                "CMake Build"
+            ]
+        },
+        // Shared Memory Rectangle
+        {
+            "label": "Run Shared Memory Rectangle",
+            "type": "shell",
+            "command":"./build/smemRect ${input:verbose}",
+            "group": "build",
+            "dependsOn":[
+                "CMake Build"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Shared Memory Rectangle",
+            "command":"ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/smemRect",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/smemSquare.ncu-cfg",
+                "./build/smemRect",
                 "${input:verbose}",
                 
             ],
