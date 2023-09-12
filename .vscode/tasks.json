@@ -560,7 +560,7 @@
         // offset unroll
         {
             "label": "Build Offset Unroll",
-            "command":"nvcc",
+            "command": "nvcc",
             "args": [
                 "-O3",
                 "-g",
@@ -570,22 +570,22 @@
                 "./build/readSegmentUnroll"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "mkdir build directory"
             ]
         },
         {
             "label": "Run Offset Unroll",
             "type": "shell",
-            "command":"./build/readSegmentUnroll ${input:dataSizes} ${input:blockSizes} ${input:offset}",
+            "command": "./build/readSegmentUnroll ${input:dataSizes} ${input:blockSizes} ${input:offset}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Offset Unroll"
             ]
         },
         {
             "label": "Metric Profile Section for Offset Unroll",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "-o",
                 "./profiling/profiles/readSegmentUnroll",
@@ -599,7 +599,7 @@
                 "${input:offset}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "Build Offset Unroll"
             ]
         },
@@ -607,7 +607,7 @@
         {
             "label": "CMake Build",
             "type": "shell",
-            "command" : "cmake -S . -B ./build && cd ./build && make",
+            "command": "cmake -S . -B ./build && cd ./build && make",
             "group": "build"
         },
         {
@@ -615,13 +615,13 @@
             "type": "shell",
             "command": "./build/transpose ${input:kernel} ${input:blockdim.x} ${input:blockdim.y}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "CMake Build"
             ]
         },
         {
             "label": "Metric Profile Section for Transpose",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "-f",
                 "-o",
@@ -636,7 +636,7 @@
                 "${input:blockdim.y}"
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "CMake Build"
             ]
         },
@@ -644,15 +644,15 @@
         {
             "label": "Run Shared Memory Square",
             "type": "shell",
-            "command":"./build/smemSquare ${input:verbose}",
+            "command": "./build/smemSquare ${input:verbose}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "CMake Build"
             ]
         },
         {
             "label": "Metric Profile Section for Shared Memory Square",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "-f",
                 "-o",
@@ -663,10 +663,9 @@
                 "./profiling/configs/smemSquare.ncu-cfg",
                 "./build/smemSquare",
                 "${input:verbose}",
-                
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "CMake Build"
             ]
         },
@@ -674,15 +673,15 @@
         {
             "label": "Run Shared Memory Rectangle",
             "type": "shell",
-            "command":"./build/smemRect ${input:verbose}",
+            "command": "./build/smemRect ${input:verbose}",
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
                 "CMake Build"
             ]
         },
         {
             "label": "Metric Profile Section for Shared Memory Rectangle",
-            "command":"ncu",
+            "command": "ncu",
             "args": [
                 "-f",
                 "-o",
@@ -693,10 +692,37 @@
                 "./profiling/configs/smemSquare.ncu-cfg",
                 "./build/smemRect",
                 "${input:verbose}",
-                
             ],
             "group": "build",
-            "dependsOn":[
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
+        // Share Memory Reduction
+        {
+            "label": "Run Shared Memory Reduction",
+            "type": "shell",
+            "command": "./build/smemReduceInteger",
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Shared Memory Reduction",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/smemReduceInteger",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/smemReduceInteger.ncu-cfg",
+                "./build/smemReduceInteger",
+            ],
+            "group": "build",
+            "dependsOn": [
                 "CMake Build"
             ]
         }
@@ -786,7 +812,7 @@
         },
         {
             "type": "promptString",
-            "id":"blockSizes",
+            "id": "blockSizes",
             "description": "differnet blockSizes eg, 64,128,256,512",
             "default": "64,128,256,512"
         },

@@ -2,6 +2,25 @@ Identifier: "StoreMetrics"
 DisplayName: "Store Metrics"
 Description: "Store Metrics from thread,Wrap,smsp,sm,L1,L2,DRAM"
 
+Header {
+    Metrics{
+        Label:"Requested requests For GStore"
+        Name:"l1tex__t_requests_pipe_lsu_mem_global_op_st.sum"
+    }
+    Metrics{
+        Label:"sector/req"
+        Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_st.ratio"
+    }
+    Metrics{
+        Label:"GStore Throughput"
+        Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_st.sum.per_second"
+    }
+    Metrics{
+        Label:"Store Efficiency"
+        Name:"smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct"
+    }
+}
+
 Body{
     Items{
         Table{
@@ -111,9 +130,13 @@ Body{
                 Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_st.ratio"
             }
             Metrics{
-                Label:"Sector Hit Rate"
-                Name:"l1tex__t_sector_pipe_lsu_mem_global_op_st_hit_rate.pct"
+                Label:"GStore Throughput"
+                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_st.sum.per_second"
             }
+            # Metrics{
+            #     Label:"Sector Hit Rate"
+            #     Name:"l1tex__t_sector_pipe_lsu_mem_global_op_st_hit_rate.pct"
+            # }
             # Metrics{
             #     Label:"L1 cache access"
             #     Name:"l1tex__t_set_accesses_pipe_lsu_mem_global_op_st.sum"

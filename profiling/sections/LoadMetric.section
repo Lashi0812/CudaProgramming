@@ -2,6 +2,24 @@ Identifier: "LoadMetrics"
 DisplayName: "Load Metrics"
 Description: "Load Metrics from thread,Wrap,smsp,sm,L1,L2,DRAM"
 
+Header {
+    Metrics{
+        Label:"Requested requests For GLoad"
+        Name:"l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum"
+    }
+    Metrics{
+        Label:"sector/req"
+        Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio"
+    }
+    Metrics{
+        Label:"GLoad Throughput"
+        Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second"
+    }
+    Metrics{
+        Label:"Load Efficiency"
+        Name:"smsp__sass_average_data_bytes_per_sector_mem_global_op_ld.pct"
+    }
+}
 Body{
     Items{
         Table{
@@ -111,9 +129,13 @@ Body{
                 Name:"l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio"
             }
             Metrics{
-                Label:"Sector Hit Rate"
-                Name:"l1tex__t_sector_pipe_lsu_mem_global_op_ld_hit_rate.pct"
+                Label:"GLoad Throughput"
+                Name:"l1tex__t_bytes_pipe_lsu_mem_global_op_ld.sum.per_second"
             }
+            # Metrics{
+            #     Label:"Sector Hit Rate"
+            #     Name:"l1tex__t_sector_pipe_lsu_mem_global_op_ld_hit_rate.pct"
+            # }
             # Metrics{
             #     Label:"L1 cache access"
             #     Name:"l1tex__t_set_accesses_pipe_lsu_mem_global_op_ld.sum"
