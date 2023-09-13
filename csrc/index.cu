@@ -1,14 +1,14 @@
 #include <ATen/ATen.h>
 #include <iostream>
 
-__global__ void rowMajor(const int *__restrict__ matrix, int *out, const int nx, const int ny)
+__global__ void rowMajor(const int *__restrict__ matrix, int *out, const int outerDim, const int innerDim)
 {
     // treating the "thread|block.x" as the inner dim ie col
-    int col = blockDim.x * blockIdx.x + threadIdx.x;
-    int row = blockDim.y * blockIdx.y + threadIdx.y;
+    int inner = blockDim.x * blockIdx.x + threadIdx.x;
+    int outer = blockDim.y * blockIdx.y + threadIdx.y;
 
-    int idx = row * ny + col;
-    if (row < nx && col < ny)
+    int idx = outer * innerDim + inner;
+    if (inner < innerDim && outer < outerDim)
         out[idx] = matrix[idx];
 }
 
@@ -66,20 +66,20 @@ int main()
     cudaFree(d_mat);
 
     // row major order
-    int nx = 32, ny = 32;
-    at::Tensor mat_a = at::arange(nx * ny, at::kInt).reshape({nx, ny});
+    int outerDim = 32, innerDim = 16;
+    at::Tensor mat_a = at::arange(outerDim * innerDim, at::kInt).reshape({outerDim, innerDim});
     at::Tensor mat_b = at::zeros_like(mat_a);
-    nBytes = nx * ny * 4;
+    nBytes = outerDim * innerDim * 4;
 
-    dim3 block_row(32, 32);
-    dim3 grid_row((nx + block_row.x - 1) / block_row.x, (ny + block_row.y - 1) / block_row.y);
+    dim3 block_row(innerDim, outerDim);
+    dim3 grid_row((innerDim + block_row.x - 1) / block_row.x, (outerDim + block_row.y - 1) / block_row.y);
 
     int *d_a, *d_b;
     cudaMalloc((void **)&d_a, nBytes);
     cudaMalloc((void **)&d_b, nBytes);
 
     cudaMemcpy(d_a, mat_a.data_ptr(), nBytes, cudaMemcpyHostToDevice);
-    rowMajor<<<grid_row, block_row>>>(d_a, d_b, nx, ny);
+    rowMajor<<<grid_row, block_row>>>(d_a, d_b, outerDim, innerDim);
     cudaMemcpy(mat_b.data_ptr(), d_b, nBytes, cudaMemcpyDeviceToHost);
 
     std::cout << mat_a << std::endl;
