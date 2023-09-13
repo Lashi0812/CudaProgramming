@@ -86,4 +86,11 @@ sed -i '$a\
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' "$ZSH_CONFIG"
 
 sed -i -e "s/plugins=.*/plugins=(git ${PLUGINS})/g" "$ZSH_CONFIG"
-cat "$ZSH_CONFIG".pre-oh-my-zsh >> "$ZSH_CONFIG"
+if  [ -f "$ZSH_CONFIG".pre-oh-my-zsh ]; then
+   cat "$ZSH_CONFIG".pre-oh-my-zsh >> "$ZSH_CONFIG"
+fi
+
+# check for the conda and init zsh
+if [ -f /root/miniconda3/bin/conda ] ; then 
+    /root/miniconda3/bin/conda init zsh
+fi
