@@ -1,6 +1,17 @@
 #include <ATen/ATen.h>
 #include <iostream>
 
+__global__ void rowMajor(const int *__restrict__ matrix, int *out, const int nx, const int ny)
+{
+    // treating the "thread|block.x" as the inner dim ie col
+    int col = blockDim.x * blockIdx.x + threadIdx.x;
+    int row = blockDim.y * blockIdx.y + threadIdx.y;
+
+    int idx = row * ny + col;
+    if (row < nx && col < ny)
+        out[idx] = matrix[idx];
+}
+
 __global__ void index(int *matrix, int height, int width)
 {
     // find the matrix original co-ordinate (row,col)
@@ -33,11 +44,11 @@ int main()
     int nBytes = nElems * sizeof(int);
     at::Tensor matrix = at::arange(nElems, at::kInt).reshape({height, width});
 
-    std::cout << matrix << std::endl;
-    std::cout << matrix.transpose(1, 0) << std::endl;
+    // std::cout << matrix << std::endl;
+    // std::cout << matrix.transpose(1, 0) << std::endl;
 
-    std::cout << matrix.flatten() << std::endl;
-    std::cout << matrix.transpose(1, 0).flatten() << std::endl;
+    // std::cout << matrix.flatten() << std::endl;
+    // std::cout << matrix.transpose(1, 0).flatten() << std::endl;
 
     // std::cout << matrix[1][2] << std::endl;
 
@@ -52,7 +63,30 @@ int main()
 
     index<<<grid, block>>>(d_mat, height, width);
     cudaDeviceSynchronize();
-
     cudaFree(d_mat);
+
+    // row major order
+    int nx = 32, ny = 32;
+    at::Tensor mat_a = at::arange(nx * ny, at::kInt).reshape({nx, ny});
+    at::Tensor mat_b = at::zeros_like(mat_a);
+    nBytes = nx * ny * 4;
+
+    dim3 block_row(32, 32);
+    dim3 grid_row((nx + block_row.x - 1) / block_row.x, (ny + block_row.y - 1) / block_row.y);
+
+    int *d_a, *d_b;
+    cudaMalloc((void **)&d_a, nBytes);
+    cudaMalloc((void **)&d_b, nBytes);
+
+    cudaMemcpy(d_a, mat_a.data_ptr(), nBytes, cudaMemcpyHostToDevice);
+    rowMajor<<<grid_row, block_row>>>(d_a, d_b, nx, ny);
+    cudaMemcpy(mat_b.data_ptr(), d_b, nBytes, cudaMemcpyDeviceToHost);
+
+    std::cout << mat_a << std::endl;
+    std::cout << mat_b << std::endl;
+
+    cudaFree(d_a);
+    cudaFree(d_b);
+
     cudaDeviceReset();
 }
