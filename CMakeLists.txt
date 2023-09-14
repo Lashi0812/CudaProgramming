@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(My_Project CUDA CXX)
 # project(My_Project CUDA CXX)
-set(CMAKE_PREFIX_PATH /usr/local/lib/python3.10/dist-packages/torch/share/cmake)
+set(CMAKE_PREFIX_PATH /root/miniconda3/envs/nlp/lib/python3.10/site-packages/torch/share/cmake)
 # set(CMAKE_PREFIX_PATH /home/lashi/miniconda3/envs/nlp/lib/python3.11/site-packages/torch/share/cmake)
 
 # find_package(CUDAToolkit REQUIRED)
@@ -37,6 +37,12 @@ add_executable_for_torch(smemRect)
 
 #smemReduceInteger.cu
 add_executable_for_torch(smemReduceInteger)
+
+#smemTranspose.cu
+add_executable_for_torch(smemTranspose)
+
+#index.cu
+add_executable_for_torch(index)
 
 
 

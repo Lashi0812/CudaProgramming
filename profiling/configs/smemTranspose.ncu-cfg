@@ -1,0 +1,5 @@
+[Launch-and-attach]
+-f
+--import-source = yes
+--section = LoadMetrics,StoreMetrics,DeviceMemoryTable,SharedMemAnalysis,ComputeWorkloadAnalysis,InstructionStats,LaunchStats,MemoryWorkloadAnalysis,MemoryWorkloadAnalysis_Chart,MemoryWorkloadAnalysis_Tables,Occupancy,SchedulerStats,SourceCounters,SpeedOfLight,WarpStateStats
+--section-folder-recursive = /workspaces/CudaProgramming/profiling/sections/

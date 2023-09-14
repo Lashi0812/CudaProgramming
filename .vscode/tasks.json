@@ -725,7 +725,63 @@
             "dependsOn": [
                 "CMake Build"
             ]
-        }
+        },
+        // Shared memory transpose
+        {
+            "label": "Run Shared Memory transpose",
+            "type": "shell",
+            "command": "./build/smemTranspose",
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Shared Memory transpose",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/smemTranspose",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/smemTranspose.ncu-cfg",
+                "./build/smemTranspose"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
+        // index
+        {
+            "label": "Run index",
+            "type": "shell",
+            "command": "./build/index",
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
+        {
+            "label": "Metric Profile Section for Index",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/index",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/transpose.ncu-cfg",
+                "./build/index"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
     ],
     "inputs": [
         {
