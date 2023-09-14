@@ -44,6 +44,9 @@ add_executable_for_torch(smemTranspose)
 #index.cu
 add_executable_for_torch(index)
 
+# readOnlyCache
+add_executable_for_torch(readOnlyCache)
+
 
 
 

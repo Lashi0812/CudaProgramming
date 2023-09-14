@@ -782,6 +782,25 @@
                 "CMake Build"
             ]
         },
+        // readOnlyCache
+        {
+            "label": "Metric Profile Section for read only cache",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/readOnlyCache",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/readOnlyCache.ncu-cfg",
+                "./build/readOnlyCache"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
     ],
     "inputs": [
         {
