@@ -47,6 +47,9 @@ add_executable_for_torch(index)
 # readOnlyCache
 add_executable_for_torch(readOnlyCache)
 
+# streamSimple.cu
+add_executable_for_torch(streamSimple)
+
 
 
 

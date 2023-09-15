@@ -801,6 +801,25 @@
                 "CMake Build"
             ]
         },
+        // stream simple
+        {
+            "label": "System Profile for Stream Simple",
+            "command": "nsys",
+            "args": [
+                "profile",
+                // "--stats",
+                // "true",
+                "--output",
+                "./profiling/profiles/streamSimple",
+                "--force-overwrite",
+                "true",
+                "./build/streamSimple"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
     ],
     "inputs": [
         {
