@@ -17,12 +17,16 @@ endmacro()
 
 # common to all 
 include_directories(${CMAKE_SOURCE_DIR}/include)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+# # set(TORCH_NVCC_FLAGS "${TORCH_NVCC_FLAGS},--generate-line-info")
+# list(APPEND CUDA_NVCC_FLAGS "-Xptxas" "--generate-line-info")
 
 # transpose.cu
 # message("FLAGS  "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS})
 # message("Torch libraries " ${TORCH_LIBRARIES})
 # message("Cuda lib" ${CUDA_CUDA_LIB})
+# message("Torch NVCC flags " ${TORCH_NVCC_FLAGS})
+# message("CUDA NVCC flags " ${CUDA_NVCC_FLAGS})
 # add_executable(transpose ./csrc/transpose.cu)
 # set_target_properties(transpose PROPERTIES CXX_STANDARD 17 CUDA_ARCHITECTURES 89)
 # target_compile_options(transpose PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--generate-line-info>)
@@ -50,6 +54,8 @@ add_executable_for_torch(readOnlyCache)
 # streamSimple.cu
 add_executable_for_torch(streamSimple)
 
+#torch.cu
+add_executable_for_torch(torchOps)
 
 
 
