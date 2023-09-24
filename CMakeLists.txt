@@ -57,6 +57,8 @@ add_executable_for_torch(streamSimple)
 #torch.cu
 add_executable_for_torch(torchOps)
 
+# torchLinear.cu
+add_executable_for_torch(torchLinear)
 
 
 # option(SOURCE_FILE_PATH "Specify the source file path")

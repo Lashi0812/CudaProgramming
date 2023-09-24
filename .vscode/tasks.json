@@ -839,6 +839,25 @@
                 "CMake Build"
             ]
         },
+        // Torch Linear
+        {
+            "label": "Metric Profile Section for Torch Linear",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/torchLinear",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/torchOps.ncu-cfg",
+                "./build/torchLinear"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
     ],
     "inputs": [
         {
