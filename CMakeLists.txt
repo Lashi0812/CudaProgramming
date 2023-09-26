@@ -60,6 +60,9 @@ add_executable_for_torch(torchOps)
 # torchLinear.cu
 add_executable_for_torch(torchLinear)
 
+# torchBfloat16.cu
+add_executable_for_torch(torchBfloat16)
+
 
 # option(SOURCE_FILE_PATH "Specify the source file path")
 # option(ENABLE_TORCH "ENABLE Torch Library" OFF)
