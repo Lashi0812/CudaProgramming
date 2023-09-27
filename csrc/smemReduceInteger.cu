@@ -1,6 +1,7 @@
 #include "../include/common.h"
 #include <ATen/ATen.h>
 #include <iostream>
+#include <cub/cub.cuh>
 
 #define DIM 128
 
@@ -94,6 +95,24 @@ __global__ void reduceSmem(int *g_idata, int *g_odata, const unsigned int N)
     }
     if (tid == 0)
         g_odata[blockIdx.x] = smem[0];
+}
+
+__global__ void reduceUsingCUB(int *g_idata,int *g_odata)
+{
+    typedef cub::BlockLoad<int,DIM,1,cub::BLOCK_LOAD_DIRECT,1,1,890> BlockLoad;
+    typedef cub::BlockReduce<int,DIM,cub::BLOCK_REDUCE_WARP_REDUCTIONS,1,1,890> BlockReduce;
+
+    __shared__ typename BlockLoad::TempStorage tmp_load;
+    __shared__ typename BlockReduce::TempStorage tmp_reduce;
+
+    int tid[1];
+
+    BlockLoad(tmp_load).Load(g_idata,tid);
+    int agg = BlockReduce(tmp_reduce).Sum(tid);
+    if(threadIdx.x == 0)
+    {
+        *g_odata = agg;
+    }
 }
 
 __global__ void reduceSmemUnroll4(int *g_idata, int *g_odata, const unsigned int N)
@@ -245,6 +264,16 @@ int main()
     CHECK_ERROR(cudaMemcpy(gpuRef.data_ptr(), d_C, grid.x * sizeof(int), cudaMemcpyDeviceToHost));
     // check result
     std::cout << "Reduce using the Static Shared memory  " << (h_A.sum().allclose(gpuRef.sum()) ? "Sum Match " : "Not Match ") << gpuRef.sum() << std::endl;
+
+    // transfer data to device
+    CHECK_ERROR(cudaMemcpy(d_A, h_A.data_ptr(), nBytes, cudaMemcpyHostToDevice));
+    // launch the kernel : reduceUsingCUB
+    reduceUsingCUB<<<grid, block>>>(d_A, d_C);
+    // copy back the grid result
+    gpuRef.zero_();
+    CHECK_ERROR(cudaMemcpy(gpuRef.data_ptr(), d_C, grid.x * sizeof(int), cudaMemcpyDeviceToHost));
+    // check result
+    std::cout << "Reduce using the CUB  " << (h_A.sum().allclose(gpuRef.sum()) ? "Sum Match " : "Not Match ") << gpuRef.sum() << std::endl;
 
     // transfer data to device
     CHECK_ERROR(cudaMemcpy(d_A, h_A.data_ptr(), nBytes, cudaMemcpyHostToDevice));
