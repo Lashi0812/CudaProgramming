@@ -29,9 +29,8 @@ RUN ~/miniconda3/bin/conda env create -f /workspace/environment.yml
 
 # zsh plugin
 ENV SHELL /bin/zsh
-RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.zsh_history" \
-    && echo "$SNIPPET" >> "/root/.zsh_history"
-COPY .devcontainer/zsh-plugins/.p10k.zsh /root/
+COPY .devcontainer/zsh-plugins/.p10k.zsh .devcontainer/zsh-plugins/ohmyzsh.sh /root/
+RUN chmod +x /root/ohmyzsh.sh && sh -c /root/ohmyzsh.sh
 
 # # pip install
 # COPY .devcontainer/requirements.txt /workspace/requirements.txt

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(My_Project CUDA CXX)
 # project(My_Project CUDA CXX)
-set(CMAKE_PREFIX_PATH /root/miniconda3/envs/nlp/lib/python3.10/site-packages/torch/share/cmake)
+set(CMAKE_PREFIX_PATH /root/miniconda3/envs/nlp/lib/python3.11/site-packages/torch/share/cmake)
 # set(CMAKE_PREFIX_PATH /home/lashi/miniconda3/envs/nlp/lib/python3.11/site-packages/torch/share/cmake)
 
 # find_package(CUDAToolkit REQUIRED)

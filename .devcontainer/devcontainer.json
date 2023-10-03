@@ -1,5 +1,5 @@
 {
-    "name":"New Dev",
+    "name":"Cuda Prog",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".."},
