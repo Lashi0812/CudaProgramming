@@ -4,8 +4,21 @@
 #include <ATen/ATen.h>
 #include <iostream>
 
+/*
+mat a ->16x16 mat b --> 16x16 
+                   _______
+                   |@      |
+                   |       |
+                   |_______|
+         _______    _______
+        |@      |  |@      |
+        |       |  |       |
+        |_______|  |_______|
+
+*/
+
 template <typename T>
-__global__ void wmma_kernel(T *a, T *b, float *c)
+__global__ void single_wmma_kernel(T *a, T *b, float *c)
 {
     // declare the fragment
     nvcuda::wmma::fragment<nvcuda::wmma::matrix_a, 16, 16, 16, T, nvcuda::wmma::row_major> a_frag;
