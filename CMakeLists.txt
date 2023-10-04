@@ -11,7 +11,7 @@ find_package(Torch REQUIRED)
 macro(add_executable_for_torch target_name)
     add_executable(${target_name} "./csrc/${target_name}.cu")
     set_target_properties(${target_name} PROPERTIES CXX_STANDARD 17 CUDA_ARCHITECTURES 89)
-    target_compile_options(${target_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--generate-line-info -G> -g)
+    target_compile_options(${target_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-G> -g)
     target_link_libraries(${target_name} "${TORCH_LIBRARIES}")
 endmacro()
 
