@@ -182,33 +182,7 @@ __global__ void wmma_with_loop(half *a, half *b, float *c)
     // store the output
     nvcuda::wmma::store_matrix_sync(&c[(warp_row * 1024 + warp_col) * 16], c_frag, 1024, nvcuda::wmma::mem_row_major);
 }
-using namespace nvcuda;
-__global__ void matmulT(float *C, half *A, half *B, int Ay, int Ax, int Bx)
-{
-    int warp = (blockDim.x * blockIdx.x + threadIdx.x) / warpSize; // warp rank in grid
 
-    int cx = warp % (Bx / 16); // (x,y) location of active tile
-    int cy = warp / (Bx / 16); // for current warp in C matrix
-
-    int Atile_pos = cy * 16 * Bx; // start x (row) for first A tile
-    int Btile_pos = cx * 16;      // start y (col) for first B tile
-
-    // Declare the fragments as 16 x 16 tiles
-    wmma::fragment<wmma::matrix_a, 16, 16, 16, half, wmma::row_major> a_frag; // A
-    wmma::fragment<wmma::matrix_b, 16, 16, 16, half, wmma::row_major> b_frag; // B
-    wmma::fragment<wmma::accumulator, 16, 16, 16, float> c_frag;              // C
-    wmma::fill_fragment(c_frag, 0.0f);                                        // set C = 0
-
-    for (int k = 0; k < Ax / 16; k++)
-    {                                                      // accumulate su, of row*column for C tile
-        wmma::load_matrix_sync(a_frag, &A[Atile_pos], Ax); // load A as 16x16 tile
-        wmma::load_matrix_sync(b_frag, &B[Btile_pos], Bx); // load B as 16x16 tile
-        wmma::mma_sync(c_frag, a_frag, b_frag, c_frag);    // C = A*B + C
-        Atile_pos += 16;                                   // step along row of A
-        Btile_pos += 16 * Bx;                              // step down column of B
-    }
-    wmma::store_matrix_sync(&C[(cy * Bx + cx) * 16], c_frag, Bx, wmma::mem_row_major);
-}
 
 int main()
 {
