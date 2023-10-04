@@ -5,12 +5,13 @@ set(CMAKE_PREFIX_PATH /root/miniconda3/envs/nlp/lib/python3.11/site-packages/tor
 # set(CMAKE_PREFIX_PATH /home/lashi/miniconda3/envs/nlp/lib/python3.11/site-packages/torch/share/cmake)
 
 # find_package(CUDAToolkit REQUIRED)
+set(TORCH_CUDA_ARCH_LIST 8.9)
 find_package(Torch REQUIRED)
 
 macro(add_executable_for_torch target_name)
     add_executable(${target_name} "./csrc/${target_name}.cu")
     set_target_properties(${target_name} PROPERTIES CXX_STANDARD 17 CUDA_ARCHITECTURES 89)
-    target_compile_options(${target_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--generate-line-info>)
+    target_compile_options(${target_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--generate-line-info -G> -g)
     target_link_libraries(${target_name} "${TORCH_LIBRARIES}")
 endmacro()
 
@@ -63,6 +64,8 @@ add_executable_for_torch(torchLinear)
 # torchBfloat16.cu
 add_executable_for_torch(torchBfloat16)
 
+# c.cu
+add_executable_for_torch(warpMat)
 
 # option(SOURCE_FILE_PATH "Specify the source file path")
 # option(ENABLE_TORCH "ENABLE Torch Library" OFF)

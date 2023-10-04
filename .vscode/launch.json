@@ -8,7 +8,7 @@
             "name": "CUDA C++: Launch",
             "type": "cuda-gdb",
             "request": "launch",
-            "program": "/workspaces/CudaProgramming/build/sumMatrix"
+            "program": "/workspaces/CudaProgramming/build/warpMat"
         },
         {
             "name": "CUDA C++: Attach",

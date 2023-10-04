@@ -858,6 +858,25 @@
                 "CMake Build"
             ]
         },
+        // warpMat
+        {
+            "label": "Metric Profile Section for Warp Matmul",
+            "command": "ncu",
+            "args": [
+                "-f",
+                "-o",
+                "./profiling/profiles/warpMat",
+                "--config-file",
+                "on",
+                "--config-file-path",
+                "./profiling/configs/torchOps.ncu-cfg",
+                "./build/warpMat"
+            ],
+            "group": "build",
+            "dependsOn": [
+                "CMake Build"
+            ]
+        },
     ],
     "inputs": [
         {
